@@ -3,20 +3,25 @@ package com.salesianostriana.dam.dyscotkeov1.user.model;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import lombok.*;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+@Table(name = "users")
+public class User implements Serializable {
 
+    @Id
+    @GeneratedValue
     private Long id;
+
     private String fullName;
     private String userName;
     private String phoneNumber;
@@ -26,17 +31,24 @@ public class User {
     private String description;
     private LocalDate joinDate;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Post> publishedPosts;
+    @ElementCollection
+    private List<User> followers = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Post> likedPosts;
+    @ElementCollection
+    private List<User> follow = new ArrayList<>();
 
-    @ManyToOne
-    private List<User> followers;
+    @OneToMany(mappedBy = "userWhoPost", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Post> publishedPosts = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<User> follows;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(joinColumns = @JoinColumn(name = "user_id",
+            foreignKey = @ForeignKey(name="FK_LIKEDPOSTS_USERS")),
+            inverseJoinColumns = @JoinColumn(name = "post_id",
+                    foreignKey = @ForeignKey(name="FK_LIKEDPOSTS_POSTS")),
+            name = "likedposts"
+    )
+    private List<Post> likedPosts = new ArrayList<>();
 
     private boolean verified;
 }
