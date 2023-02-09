@@ -1,7 +1,7 @@
 package com.salesianostriana.dam.dyscotkeov1.post.model;
 
 import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
-import com.salesianostriana.dam.dyscotkeov1.user.model.User;
+import com.salesianostriana.dam.dyscotkeov1.client.model.Client;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,11 +27,11 @@ public class Post implements Serializable {
     private String imgPath;
 
     @ManyToOne
-    @JoinColumn(name = "userWhoPost", foreignKey = @ForeignKey(name = "FK_USER_COMMENT"))
-    private User userWhoPost;
+    @JoinColumn(name = "clientWhoPost", foreignKey = @ForeignKey(name = "FK_CLIENT_COMMENT"))
+    private Client clientWhoPost;
 
     @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.LAZY)
-    private List<User> usersWhoLiked;
+    private List<Client> clientsWhoLiked;
 
     @OneToMany(mappedBy = "commentedPost")
     @Builder.Default

@@ -1,4 +1,4 @@
-package com.salesianostriana.dam.dyscotkeov1.user.model;
+package com.salesianostriana.dam.dyscotkeov1.client.model;
 
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import lombok.*;
@@ -15,8 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
-public class User implements Serializable {
+public class Client implements Serializable {
 
     @Id
     @GeneratedValue
@@ -26,24 +25,23 @@ public class User implements Serializable {
     private String userName;
     private String phoneNumber;
     private String email;
-    private String password;
     private String imgPath;
     private String description;
     private LocalDate joinDate;
 
     @ElementCollection
-    private List<User> followers = new ArrayList<>();
+    private List<Client> followers = new ArrayList<>();
 
     @ElementCollection
-    private List<User> follow = new ArrayList<>();
+    private List<Client> follow = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userWhoPost", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "clientWhoPost", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Post> publishedPosts = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(joinColumns = @JoinColumn(name = "user_id",
-            foreignKey = @ForeignKey(name="FK_LIKEDPOSTS_USERS")),
+    @JoinTable(joinColumns = @JoinColumn(name = "client_id",
+            foreignKey = @ForeignKey(name="FK_LIKEDPOSTS_CLIENT")),
             inverseJoinColumns = @JoinColumn(name = "post_id",
                     foreignKey = @ForeignKey(name="FK_LIKEDPOSTS_POSTS")),
             name = "likedposts"

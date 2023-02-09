@@ -1,7 +1,7 @@
 package com.salesianostriana.dam.dyscotkeov1.comment.model;
 
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
-import com.salesianostriana.dam.dyscotkeov1.user.model.User;
+import com.salesianostriana.dam.dyscotkeov1.client.model.Client;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,8 +24,8 @@ public class Comment implements Serializable {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userWhoPost", foreignKey = @ForeignKey(name = "FK_COMMENT_USER"))
-    private User userWhoPost;
+    @JoinColumn(name = "clientWhoPost", foreignKey = @ForeignKey(name = "FK_COMMENT_CLIENT"))
+    private Client clientWhoPost;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "commentedPost", foreignKey = @ForeignKey(name = "FK_COMMENT_POST"))
@@ -34,6 +34,6 @@ public class Comment implements Serializable {
     private LocalDate publishedDate;
 
     @OneToMany
-    private List<User> usersWhoLiked;
+    private List<Client> clientssWhoLiked;
 
 }
