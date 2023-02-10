@@ -29,10 +29,6 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.duration}")
-    //private int jwtLifeInDays;
-    private int jwtLifeInMinutes;
-
     private JwtParser jwtParser;
 
     private SecretKey secretKey;
@@ -57,21 +53,11 @@ public class JwtProvider {
     }
 
     public String generateToken(User user) {
-        Date tokenExpirationDateTime =
-                Date.from(
-                        LocalDateTime
-                                .now()
-                                //.plusDays(jwtLifeInDays)
-                                .plusMinutes(jwtLifeInMinutes)
-                                .atZone(ZoneId.systemDefault())
-                                .toInstant()
-                );
 
         return Jwts.builder()
                 .setHeaderParam("typ", TOKEN_TYPE)
                 .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(tokenExpirationDateTime)
                 .signWith(secretKey)
                 .compact();
 

@@ -37,8 +37,5 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     List<User> userPosts();
 
     @EntityGraph("user-with-posts")
-    Optional<User> findById(UUID id);
-
-    @EntityGraph("user-with-posts")
     Optional<User> findDistinctByUserName(String userName);
 }

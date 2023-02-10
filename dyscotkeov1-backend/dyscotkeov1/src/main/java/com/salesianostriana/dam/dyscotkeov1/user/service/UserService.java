@@ -1,8 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.user.service;
 
 import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
-import com.salesianostriana.dam.dyscotkeov1.security.jwt.access.JwtProvider;
-import com.salesianostriana.dam.dyscotkeov1.security.jwt.refresh.RefreshTokenService;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.NewUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
@@ -71,7 +69,7 @@ public class UserService {
         return userRepository.findDistinctByUserName(username);
     }
 
-    public User createUserWithUserRole(NewUserDto createUserRequest) {
+    public User createUser(NewUserDto createUserRequest) {
         return createUser(createUserRequest, EnumSet.of(UserRole.USER));
     }
 

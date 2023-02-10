@@ -1,35 +1,35 @@
 package com.salesianostriana.dam.dyscotkeov1.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class JwtUserResponse extends GetUserDto{
 
     private String token;
-    private String refreshToken;
 
     public JwtUserResponse(GetUserDto user) {
-        UUID id = user.getId();
-        String username = user.getUserName();
-        String fullName = user.getFullName();
-        String avatar = user.getImgPath();
-        LocalDateTime createdAt = user.getCreatedAt();
+        id = user.getId();
+        userName = user.getUserName();
+        fullName = user.getFullName();
+        imgPath = user.getImgPath();
+        createdAt = user.getCreatedAt();
+        followers = user.getFollowers();
+        countOfPosts = user.getCountOfPosts();
     }
 
-    public static JwtUserResponse of (User user, String token, String refreshToken) {
+    public static JwtUserResponse of (User user, String token) {
         JwtUserResponse result = new JwtUserResponse(GetUserDto.of(user));
         result.setToken(token);
-        result.setRefreshToken(refreshToken);
-        return result;
 
+        return result;
     }
 
 }

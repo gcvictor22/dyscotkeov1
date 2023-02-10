@@ -1,13 +1,12 @@
 package com.salesianostriana.dam.dyscotkeov1.user.controller;
 
 import com.salesianostriana.dam.dyscotkeov1.security.jwt.access.JwtProvider;
-import com.salesianostriana.dam.dyscotkeov1.security.jwt.refresh.RefreshToken;
-import com.salesianostriana.dam.dyscotkeov1.security.jwt.refresh.RefreshTokenService;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.JwtUserResponse;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.LoginDto;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.NewUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
+import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import com.salesianostriana.dam.dyscotkeov1.user.service.UserService;
 import com.salesianostriana.dam.dyscotkeov1.page.dto.GetPageDto;
 import com.salesianostriana.dam.dyscotkeov1.search.util.Extractor;
@@ -31,11 +30,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     private final AuthenticationManager authManager;
 
     private final JwtProvider jwtProvider;
 
-    private final RefreshTokenService refreshTokenService;
 
     @GetMapping("/")
     public GetPageDto<GetUserDto> findAll(
@@ -63,18 +62,15 @@ public class UserController {
 
         User user = (User) authentication.getPrincipal();
 
-        refreshTokenService.deleteByUser(user);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(JwtUserResponse.of(user, token, refreshToken.getToken()));
+                .body(JwtUserResponse.of(user, token));
 
 
     }
 
     @PostMapping("/register")
     public ResponseEntity<GetUserDto> createUserWithUserRole(@RequestBody NewUserDto createUserRequest) {
-        User user = userService.createUserWithUserRole(createUserRequest);
+        User user = userService.createUser(createUserRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
     }

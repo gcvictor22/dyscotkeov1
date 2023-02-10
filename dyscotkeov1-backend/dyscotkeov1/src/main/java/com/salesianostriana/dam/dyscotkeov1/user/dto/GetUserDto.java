@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,19 +13,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@SuperBuilder
 public class GetUserDto {
 
-    private UUID id;
-    private String userName;
-    private String fullName;
-    private String imgPath;
-    private int followers;
-    private int countOfPosts;
-    private LocalDateTime createdAt;
+    protected UUID id;
+    protected String userName;
+    protected String fullName;
+    protected String imgPath;
+    protected int followers;
+    protected int countOfPosts;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
+    protected LocalDateTime createdAt;
 
     public static GetUserDto of(User c){
         return GetUserDto.builder()

@@ -1,12 +1,18 @@
 package com.salesianostriana.dam.dyscotkeov1.page.dto;
 
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class GetPageDto<T> {
 
     private List<T> content;
+    private int currentPage;
     private boolean last;
     private boolean first;
     private int totalPages;
@@ -14,6 +20,7 @@ public class GetPageDto<T> {
 
     public GetPageDto(Page<T> page){
         this.content = page.getContent();
+        this.currentPage = page.getNumber();
         this.last = page.isLast();
         this.first = page.isFirst();
         this.totalPages = page.getTotalPages();
