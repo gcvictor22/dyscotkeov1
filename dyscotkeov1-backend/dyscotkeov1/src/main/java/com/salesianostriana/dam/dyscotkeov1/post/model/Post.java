@@ -30,10 +30,10 @@ public class Post implements Serializable {
     @JoinColumn(name = "userWhoPost", foreignKey = @ForeignKey(name = "FK_USER_COMMENT"))
     private User userWhoPost;
 
-    @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
     private List<User> usersWhoLiked;
 
-    @OneToMany(mappedBy = "commentedPost", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "commentedPost" )
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 

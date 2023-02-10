@@ -11,7 +11,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
                 }, subgraphs = {
                 @NamedSubgraph(name="posts-with-comments",
                         attributeNodes = {
-                                @NamedAttributeNode("comments")
+                                @NamedAttributeNode(value = "comments")
                         })
         })
 public class User implements UserDetails {
@@ -60,13 +59,16 @@ public class User implements UserDetails {
     private String imgPath;
 
     @ElementCollection
+    @Builder.Default
     private List<User> followers = new ArrayList<>();
 
     @ElementCollection
+    @Builder.Default
     private List<User> follows = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userWhoPost", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @OrderColumn
     private List<Post> publishedPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "userWhoComment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -93,8 +95,8 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean enabled = true;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<UserRole> roles;
+    @Convert(converter = EnumRoleConverter.class)
+    private EnumSet<UserRole> roles;
 
     @CreatedDate
     private LocalDateTime createdAt;

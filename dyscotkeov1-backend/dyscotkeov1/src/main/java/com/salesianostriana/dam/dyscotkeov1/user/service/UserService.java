@@ -1,7 +1,12 @@
 package com.salesianostriana.dam.dyscotkeov1.user.service;
 
+import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
+import com.salesianostriana.dam.dyscotkeov1.security.jwt.access.JwtProvider;
+import com.salesianostriana.dam.dyscotkeov1.security.jwt.refresh.RefreshTokenService;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
+import com.salesianostriana.dam.dyscotkeov1.user.dto.NewUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
+import com.salesianostriana.dam.dyscotkeov1.user.model.UserRole;
 import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import com.salesianostriana.dam.dyscotkeov1.exception.empty.EmptyUserListException;
 import com.salesianostriana.dam.dyscotkeov1.page.dto.GetPageDto;
@@ -11,8 +16,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,17 +31,21 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    /*
-        public PageDto<ProductDto> search(List<SearchCriteria> params, Pageable pageable){
-        PSBuilder psBuilder = new PSBuilder(params);
+    public User createUser(NewUserDto createUser, EnumSet<UserRole> roles) {
+        User user =  User.builder()
+                .userName(createUser.getUsername())
+                .password(passwordEncoder.encode(createUser.getPassword()))
+                .imgPath(createUser.getAvatar())
+                .fullName(createUser.getFullName())
+                .roles(roles)
+                .createdAt(createUser.getCreatedAt())
+                .build();
 
-        Specification<Product> spec = psBuilder.build();
-        Page<ProductDto> pageProductDto = productRepository.findAll(spec, pageable).map(ProductDto::of);
-
-        return new PageDto<>(pageProductDto);
+        return userRepository.save(user);
     }
-     */
 
     public GetPageDto<GetUserDto> findAll(List<SearchCriteria> params, Pageable pageable){
         if (userRepository.findAll().isEmpty())
@@ -51,10 +64,24 @@ public class UserService {
     }
 
     public Optional<User> findById(UUID userId) {
-        return findById(userId);
+        return userRepository.findById(userId);
     }
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findDistinctByUserName(username);
+    }
+
+    public User createUserWithUserRole(NewUserDto createUserRequest) {
+        return createUser(createUserRequest, EnumSet.of(UserRole.USER));
+    }
+
+    @Transactional
+    public List<User> userWithPostsWithComments(){
+        List<User> res = userRepository.userPosts();
+
+        if (!res.isEmpty())
+            postRepository.postComments();
+
+        return res;
     }
 }
