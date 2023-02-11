@@ -1,12 +1,8 @@
 package com.salesianostriana.dam.dyscotkeov1.user.controller;
 
-import com.salesianostriana.dam.dyscotkeov1.security.jwt.access.JwtProvider;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.JwtUserResponse;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.LoginDto;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.NewUserDto;
+import com.salesianostriana.dam.dyscotkeov1.security.jwt.JwtProvider;
+import com.salesianostriana.dam.dyscotkeov1.user.dto.*;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
-import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import com.salesianostriana.dam.dyscotkeov1.user.service.UserService;
 import com.salesianostriana.dam.dyscotkeov1.page.dto.GetPageDto;
 import com.salesianostriana.dam.dyscotkeov1.search.util.Extractor;
@@ -19,9 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -30,7 +28,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
     private final AuthenticationManager authManager;
 
     private final JwtProvider jwtProvider;
@@ -57,22 +54,27 @@ public class UserController {
                 );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String token = jwtProvider.generateToken(authentication);
-
         User user = (User) authentication.getPrincipal();
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(JwtUserResponse.of(user, token));
-
-
     }
 
     @PostMapping("/register")
-    public ResponseEntity<GetUserDto> createUserWithUserRole(@RequestBody NewUserDto createUserRequest) {
-        User user = userService.createUser(createUserRequest);
+    public ResponseEntity<GetUserDto> createUserWithUserRole(@Valid @RequestBody NewUserDto newUserDto) {
+        User user = userService.createUser(newUserDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
+    }
+
+    @PutMapping("/change/password")
+    public GetUserDto changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto,
+                                                       @AuthenticationPrincipal User loggedUser) {
+
+        User updateUser = userService.changePassword(loggedUser, changePasswordDto.getNewPassword());
+
+        return GetUserDto.of(updateUser);
     }
 
 }

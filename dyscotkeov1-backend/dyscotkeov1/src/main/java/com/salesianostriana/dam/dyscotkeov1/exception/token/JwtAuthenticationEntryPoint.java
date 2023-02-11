@@ -1,4 +1,4 @@
-package com.salesianostriana.dam.dyscotkeov1.security.errorhandling;
+package com.salesianostriana.dam.dyscotkeov1.exception.token;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    //private final ObjectMapper objectMapper;
-
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver resolver;
@@ -26,15 +24,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
-       /*response.setStatus(HttpStatus.UNAUTHORIZED.value());
-       response.setHeader("WWW-Authenticate", "Bearer");
-       response.setContentType("application/json");
-
-       response.getWriter()
-               .println(objectMapper.writeValueAsString(
-                       Map.of("error", authException.getMessage())
-               ));
-       */
         resolver.resolveException(request, response, null, authException);
     }
 }

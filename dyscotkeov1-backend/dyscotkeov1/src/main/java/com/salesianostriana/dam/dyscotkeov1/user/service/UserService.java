@@ -1,7 +1,11 @@
 package com.salesianostriana.dam.dyscotkeov1.user.service;
 
+import com.salesianostriana.dam.dyscotkeov1.exception.notfound.UserNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
+import com.salesianostriana.dam.dyscotkeov1.security.jwt.JwtProvider;
+import com.salesianostriana.dam.dyscotkeov1.user.dto.ChangePasswordDto;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
+import com.salesianostriana.dam.dyscotkeov1.user.dto.JwtUserResponse;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.NewUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.model.UserRole;
@@ -15,6 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +36,13 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
 
     public User createUser(NewUserDto createUser, EnumSet<UserRole> roles) {
         User user =  User.builder()
                 .userName(createUser.getUsername())
                 .password(passwordEncoder.encode(createUser.getPassword()))
-                .imgPath(createUser.getAvatar())
+                .imgPath(createUser.getImgPath())
                 .fullName(createUser.getFullName())
                 .roles(roles)
                 .createdAt(createUser.getCreatedAt())
@@ -73,13 +79,14 @@ public class UserService {
         return createUser(createUserRequest, EnumSet.of(UserRole.USER));
     }
 
-    @Transactional
-    public List<User> userWithPostsWithComments(){
-        List<User> res = userRepository.userPosts();
+    public User changePassword(User loggedUser, String changePasswordDto) {
 
-        if (!res.isEmpty())
-            postRepository.postComments();
+        return userRepository.findById(loggedUser.getId())
+                .map(old -> {
+                    old.setPassword(changePasswordDto);
+                    return old;
+                })
+                .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));
 
-        return res;
     }
 }

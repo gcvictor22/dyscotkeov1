@@ -1,4 +1,4 @@
-package com.salesianostriana.dam.dyscotkeov1.security.errorhandling;
+package com.salesianostriana.dam.dyscotkeov1.exception.token;
 
 public class JwtTokenException extends RuntimeException{
 

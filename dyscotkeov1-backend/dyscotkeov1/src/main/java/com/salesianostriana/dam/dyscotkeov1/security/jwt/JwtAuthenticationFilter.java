@@ -1,6 +1,6 @@
-package com.salesianostriana.dam.dyscotkeov1.security.jwt.access;
+package com.salesianostriana.dam.dyscotkeov1.security.jwt;
 
-import com.salesianostriana.dam.dyscotkeov1.security.errorhandling.JwtTokenException;
+import com.salesianostriana.dam.dyscotkeov1.exception.token.JwtTokenException;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.service.UserService;
 import lombok.RequiredArgsConstructor;

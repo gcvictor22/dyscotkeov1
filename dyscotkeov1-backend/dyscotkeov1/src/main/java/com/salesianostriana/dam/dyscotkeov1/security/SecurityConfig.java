@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.security;
 
-import com.salesianostriana.dam.dyscotkeov1.security.jwt.access.JwtAuthenticationFilter;
+import com.salesianostriana.dam.dyscotkeov1.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,7 +77,6 @@ public class SecurityConfig {
                         .and()
                                 .authorizeRequests()
                                 .antMatchers("/user/**").hasRole("USER")
-                                .antMatchers("/auth/register/admin").hasRole("ADMIN")
                                 .anyRequest().authenticated();
 
 

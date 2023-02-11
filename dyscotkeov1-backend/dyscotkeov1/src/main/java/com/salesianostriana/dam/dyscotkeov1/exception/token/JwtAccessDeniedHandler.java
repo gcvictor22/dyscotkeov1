@@ -1,4 +1,4 @@
-package com.salesianostriana.dam.dyscotkeov1.security.errorhandling;
+package com.salesianostriana.dam.dyscotkeov1.exception.token;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,6 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
-
-    //private final ObjectMapper objectMapper;
 
     @Autowired
     @Qualifier("handlerExceptionResolver")

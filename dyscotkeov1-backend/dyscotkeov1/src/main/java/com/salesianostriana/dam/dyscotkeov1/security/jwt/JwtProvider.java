@@ -1,7 +1,7 @@
-package com.salesianostriana.dam.dyscotkeov1.security.jwt.access;
+package com.salesianostriana.dam.dyscotkeov1.security.jwt;
 
 
-import com.salesianostriana.dam.dyscotkeov1.security.errorhandling.JwtTokenException;
+import com.salesianostriana.dam.dyscotkeov1.exception.token.JwtTokenException;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -29,6 +29,9 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    @Value("${jwt.duration}")
+    private int jwtLifeInDays;
+
     private JwtParser jwtParser;
 
     private SecretKey secretKey;
@@ -54,10 +57,20 @@ public class JwtProvider {
 
     public String generateToken(User user) {
 
+        Date tokenExpirationDateTime =
+                Date.from(
+                        LocalDateTime
+                                .now()
+                                .plusDays(jwtLifeInDays)
+                                .atZone(ZoneId.systemDefault())
+                                .toInstant()
+                );
+
         return Jwts.builder()
                 .setHeaderParam("typ", TOKEN_TYPE)
                 .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
+                .setExpiration(tokenExpirationDateTime)
                 .signWith(secretKey)
                 .compact();
 
