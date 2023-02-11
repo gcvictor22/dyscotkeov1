@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -40,6 +41,19 @@ public class UserController {
 
         List<SearchCriteria> params = Extractor.extractSearchCriteriaList(search);
         return userService.findAll(params, pageable);
+    }
+
+    @GetMapping("/profile")
+    public UserProfileDto viewProfile(@AuthenticationPrincipal User loggedUser){
+        return UserProfileDto.of(loggedUser);
+    }
+
+    @GetMapping("/{id}")
+    public UserProfileDto viewUser(@PathVariable UUID id){
+
+        User user = userService.findById(id).get() ;
+
+        return UserProfileDto.of(user);
     }
 
     @PostMapping("/login")
@@ -68,6 +82,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
     }
 
+    @PostMapping("/follow/{id}")
+    public ResponseEntity<GetUserDto> follow(@AuthenticationPrincipal User loggedUser, @PathVariable UUID id){
+
+        User user = userService.follow(loggedUser, id);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
+    }
+
     @PutMapping("/change/password")
     public GetUserDto changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto,
                                                        @AuthenticationPrincipal User loggedUser) {
@@ -75,6 +97,15 @@ public class UserController {
         User updateUser = userService.changePassword(loggedUser, changePasswordDto.getNewPassword());
 
         return GetUserDto.of(updateUser);
+    }
+
+    @PutMapping("/change/profile")
+    public GetUserDto changeProfile(@Valid @RequestBody ChangeProfileDto changeProfileDto,
+                                    @AuthenticationPrincipal User loggedUser){
+
+        User updatedUser =  userService.changeProfile(changeProfileDto, loggedUser);
+
+        return GetUserDto.of(updatedUser);
     }
 
 }

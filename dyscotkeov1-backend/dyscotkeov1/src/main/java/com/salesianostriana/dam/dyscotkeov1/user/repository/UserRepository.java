@@ -15,26 +15,23 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
 
     boolean existsByUserName(String s);
 
+    boolean existsByEmail(String e);
+
+    boolean existsByPhoneNumber(String p);
+
     @Query("""
             select u from User u
             left join fetch u.publishedPosts
             where u.id = :id
             """)
-    Optional<User> userWithPosts (UUID id);
+    Optional<User> userWithPostsById (UUID id);
 
     @Query("""
             select u from User u
             left join fetch u.publishedPosts
             where u.userName = :userName
             """)
-    Optional<User> userWithPosts (String userName);
-
-
-    @Query("""
-            select u from User u
-            left join fetch u.publishedPosts
-            """)
-    List<User> userPosts();
+    Optional<User> userWithPostsByUserName (String userName);
 
     @EntityGraph("user-with-posts")
     Optional<User> findDistinctByUserName(String userName);

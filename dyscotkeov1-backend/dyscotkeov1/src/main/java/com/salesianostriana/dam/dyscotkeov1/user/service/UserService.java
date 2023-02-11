@@ -1,12 +1,7 @@
 package com.salesianostriana.dam.dyscotkeov1.user.service;
 
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.UserNotFoundException;
-import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
-import com.salesianostriana.dam.dyscotkeov1.security.jwt.JwtProvider;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.ChangePasswordDto;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.JwtUserResponse;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.NewUserDto;
+import com.salesianostriana.dam.dyscotkeov1.user.dto.*;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.model.UserRole;
 import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
@@ -18,14 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +32,8 @@ public class UserService {
         User user =  User.builder()
                 .userName(createUser.getUsername())
                 .password(passwordEncoder.encode(createUser.getPassword()))
+                .email(createUser.getEmail())
+                .phoneNumber(createUser.getPhoneNumber())
                 .imgPath(createUser.getImgPath())
                 .fullName(createUser.getFullName())
                 .roles(roles)
@@ -67,8 +59,22 @@ public class UserService {
         return userRepository.existsByUserName(s);
     }
 
+    public boolean existsByEmail(String e) {
+        return userRepository.existsByUserName(e);
+    }
+
+    public boolean existsByPhoneNumber(String p) {
+        return userRepository.existsByUserName(p);
+    }
+
     public Optional<User> findById(UUID userId) {
-        return userRepository.findById(userId);
+
+        User user = userRepository.findById(userId).get();
+
+        if (userRepository.findById(userId).isEmpty())
+            throw  new UserNotFoundException(userId);
+
+        return Optional.of(user);
     }
 
     public Optional<User> findByUsername(String username) {
@@ -84,9 +90,35 @@ public class UserService {
         return userRepository.findById(loggedUser.getId())
                 .map(old -> {
                     old.setPassword(changePasswordDto);
-                    return old;
+                    return userRepository.save(old);
                 })
                 .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));
 
+    }
+
+    public User changeProfile(ChangeProfileDto changeProfileDto, User loggedUser) {
+        return userRepository.findById(loggedUser.getId())
+                .map(old -> {
+                    old.setFullName(changeProfileDto.getFullName());
+                    old.setUserName(changeProfileDto.getUsername());
+                    old.setEmail(changeProfileDto.getEmail());
+                    old.setPhoneNumber(changeProfileDto.getPhoneNumber());
+                    old.setImgPath(changeProfileDto.getImgPath());
+                    return userRepository.save(old);
+                })
+                .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));
+    }
+
+    public User follow(User loggedUser, UUID userToFollowId) {
+        Optional<User> user = userRepository.findById(userToFollowId);
+
+        if (user.isEmpty())
+            throw new UserNotFoundException(userToFollowId);
+
+        loggedUser.giveAFollow(user.get());
+        userRepository.save(loggedUser);
+        userRepository.save(user.get());
+
+        return user.get();
     }
 }

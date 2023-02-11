@@ -58,15 +58,15 @@ public class User implements UserDetails {
     private String email;
     private String imgPath;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<User> followers = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<User> follows = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     @OrderColumn
     private List<Post> publishedPosts = new ArrayList<>();
