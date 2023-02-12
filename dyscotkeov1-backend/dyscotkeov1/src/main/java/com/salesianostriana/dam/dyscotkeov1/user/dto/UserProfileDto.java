@@ -25,6 +25,7 @@ public class UserProfileDto {
     private List<GetUserDto> followers;
     private List<Post> publishedPosts;
     private List<Post> likedPosts;
+    private boolean verified;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDateTime createdAt;
@@ -39,6 +40,7 @@ public class UserProfileDto {
                 .followers(user.getFollowers().stream().map(GetUserDto::of).collect(Collectors.toList()))
                 .publishedPosts(user.getPublishedPosts())
                 .likedPosts(user.getLikedPosts())
+                .verified(user.isVerified())
                 .build();
     }
 

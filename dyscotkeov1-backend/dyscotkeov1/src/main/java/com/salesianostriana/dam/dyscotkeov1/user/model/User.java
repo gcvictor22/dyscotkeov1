@@ -58,11 +58,17 @@ public class User implements UserDetails {
     private String email;
     private String imgPath;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(joinColumns = @JoinColumn(name = "user_who_is_followed_id",
+            foreignKey = @ForeignKey(name="FK_FOLLOWS_USER")),
+            inverseJoinColumns = @JoinColumn(name = "user_who_follows_id",
+                    foreignKey = @ForeignKey(name="FK_FOLLOWERS_USER")),
+            name = "userfollows"
+    )
     @Builder.Default
     private List<User> followers = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "followers", fetch = FetchType.EAGER)
     @Builder.Default
     private List<User> follows = new ArrayList<>();
 
@@ -84,7 +90,6 @@ public class User implements UserDetails {
     private List<Post> likedPosts = new ArrayList<>();
 
     private boolean verified;
-
 
     @Builder.Default
     private boolean accountNonExpired = true;
@@ -151,6 +156,10 @@ public class User implements UserDetails {
         if (!userToFollow.getFollowers().contains(this) && !this.follows.contains(userToFollow)){
             userToFollow.followers.add(this);
             this.follows.add(userToFollow);
+            if (userToFollow.getFollowers().size() >= 1){
+                userToFollow.setVerified(true);
+                userToFollow.setRoles(EnumSet.of(UserRole.USER, UserRole.VERIFIED));
+            }
         }
     }
 }

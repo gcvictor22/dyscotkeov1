@@ -38,12 +38,8 @@ public class SecurityConfig {
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
 
-        AuthenticationManager authenticationManager =
-            authenticationManagerBuilder.authenticationProvider(authenticationProvider())
-                    .build();
-
-        return authenticationManager;
-
+        return authenticationManagerBuilder.authenticationProvider(authenticationProvider())
+                .build();
     }
 
 

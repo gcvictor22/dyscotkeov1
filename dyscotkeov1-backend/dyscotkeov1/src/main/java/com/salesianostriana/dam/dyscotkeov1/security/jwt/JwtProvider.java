@@ -70,7 +70,7 @@ public class JwtProvider {
                 .setHeaderParam("typ", TOKEN_TYPE)
                 .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(tokenExpirationDateTime)
+                .setExpiration(tokenExpirationDateTime) //Date.from(Instant.from(LocalDateTime.now()))
                 .signWith(secretKey)
                 .compact();
 
