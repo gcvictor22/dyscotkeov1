@@ -73,6 +73,7 @@ public class SecurityConfig {
                         .and()
                                 .authorizeRequests()
                                 .antMatchers("/user/**").hasRole("USER")
+                                .antMatchers("/post/**").hasRole("USER")
                                 .anyRequest().authenticated();
 
 

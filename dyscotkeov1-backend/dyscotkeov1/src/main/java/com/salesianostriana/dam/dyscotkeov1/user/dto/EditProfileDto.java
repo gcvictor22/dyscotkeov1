@@ -1,9 +1,8 @@
 package com.salesianostriana.dam.dyscotkeov1.user.dto;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.StrongPassword;
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.UniqueEmail;
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.UniquePhoneNumber;
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.UniqueUserName;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.UniqueEmail;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.UniquePhoneNumber;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.UniqueUserName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,13 +11,12 @@ import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChangeProfileDto {
+public class EditProfileDto {
 
     @NotEmpty(message = "{newUserDto.fullname.notempty}")
     private String fullName;

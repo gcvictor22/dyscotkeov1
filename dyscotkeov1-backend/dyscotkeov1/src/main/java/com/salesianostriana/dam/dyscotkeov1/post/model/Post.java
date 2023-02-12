@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post implements Serializable {
+public class Post {
 
     @Id
     @GeneratedValue
@@ -33,10 +34,10 @@ public class Post implements Serializable {
     @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
     private List<User> usersWhoLiked;
 
-    @OneToMany(mappedBy = "commentedPost" )
+    @OneToMany(mappedBy = "commentedPost")
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
-    private LocalDate postDate;
+    private LocalDateTime postDate;
 
 }

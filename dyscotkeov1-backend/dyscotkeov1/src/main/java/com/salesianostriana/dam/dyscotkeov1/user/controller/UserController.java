@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.user.controller;
 
+import com.salesianostriana.dam.dyscotkeov1.exception.notfound.UserNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.security.jwt.JwtProvider;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.*;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -45,15 +47,12 @@ public class UserController {
 
     @GetMapping("/profile")
     public UserProfileDto viewProfile(@AuthenticationPrincipal User loggedUser){
-        return UserProfileDto.of(loggedUser);
+        return UserProfileDto.of(userService.getProfile(loggedUser.getId()));
     }
 
     @GetMapping("/{id}")
     public UserProfileDto viewUser(@PathVariable UUID id){
-
-        User user = userService.findById(id).get() ;
-
-        return UserProfileDto.of(user);
+        return UserProfileDto.of(userService.getProfile(id));
     }
 
     @PostMapping("/login")
@@ -91,7 +90,7 @@ public class UserController {
     }
 
     @PutMapping("/edit/password")
-    public GetUserDto changePassword(@Valid @RequestBody ChangePasswordDto editPasswordDto,
+    public GetUserDto changePassword(@Valid @RequestBody EditPasswordDto editPasswordDto,
                                                        @AuthenticationPrincipal User loggedUser) {
 
         User updateUser = userService.changePassword(loggedUser, editPasswordDto.getNewPassword());
@@ -100,7 +99,7 @@ public class UserController {
     }
 
     @PutMapping("/edit/profile")
-    public GetUserDto changeProfile(@Valid @RequestBody ChangeProfileDto editProfile,
+    public GetUserDto changeProfile(@Valid @RequestBody EditProfileDto editProfile,
                                     @AuthenticationPrincipal User loggedUser){
 
         User updatedUser =  userService.changeProfile(editProfile, loggedUser);

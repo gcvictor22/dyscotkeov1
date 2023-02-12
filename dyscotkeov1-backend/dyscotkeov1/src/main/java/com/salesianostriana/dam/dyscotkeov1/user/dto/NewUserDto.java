@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.user.dto;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.*;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

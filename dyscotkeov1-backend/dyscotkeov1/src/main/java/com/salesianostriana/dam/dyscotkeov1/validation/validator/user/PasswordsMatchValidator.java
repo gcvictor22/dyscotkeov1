@@ -1,6 +1,6 @@
-package com.salesianostriana.dam.dyscotkeov1.validation.validator;
+package com.salesianostriana.dam.dyscotkeov1.validation.validator.user;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.PasswodsMatch;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.PasswodsMatch;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.StringUtils;
 

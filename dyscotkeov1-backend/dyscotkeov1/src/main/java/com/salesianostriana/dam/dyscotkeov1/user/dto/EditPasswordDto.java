@@ -1,8 +1,8 @@
 package com.salesianostriana.dam.dyscotkeov1.user.dto;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.DontFieldsValueMatch;
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.FieldsValueMatch;
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.StrongPassword;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.DontFieldsValueMatch;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.FieldsValueMatch;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.StrongPassword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +22,7 @@ import javax.validation.constraints.NotEmpty;
         field = "oldPassword", fieldMatch = "newPassword",
         message = "{changePasswordDto.password.match}"
 )
-public class ChangePasswordDto {
+public class EditPasswordDto {
 
     @NotEmpty(message = "{changePasswordDto.oldPassword.notEmpty}")
     private String oldPassword;
@@ -32,6 +32,7 @@ public class ChangePasswordDto {
     private String newPassword;
 
     @NotEmpty(message = "{changePasswordDto.verifypassword.notempty}")
+    @StrongPassword
     private String newPasswordVerify;
 
 }

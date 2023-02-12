@@ -1,13 +1,14 @@
 package com.salesianostriana.dam.dyscotkeov1.user.service;
 
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.UserNotFoundException;
+import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.*;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.model.UserRole;
 import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import com.salesianostriana.dam.dyscotkeov1.exception.empty.EmptyUserListException;
 import com.salesianostriana.dam.dyscotkeov1.page.dto.GetPageDto;
-import com.salesianostriana.dam.dyscotkeov1.search.specifications.clients.CSBuilder;
+import com.salesianostriana.dam.dyscotkeov1.search.specifications.user.USBuilder;
 import com.salesianostriana.dam.dyscotkeov1.search.util.SearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PostRepository postRepository;
 
     public User createUser(NewUserDto createUser, EnumSet<UserRole> roles) {
         User user =  User.builder()
@@ -47,9 +50,9 @@ public class UserService {
         if (userRepository.findAll().isEmpty())
             throw new EmptyUserListException();
 
-        CSBuilder csBuilder = new CSBuilder(params);
+        USBuilder usBuilder = new USBuilder(params);
 
-        Specification<User> spec = csBuilder.build();
+        Specification<User> spec = usBuilder.build();
         Page<GetUserDto> pageGetClientDto = userRepository.findAll(spec, pageable).map(GetUserDto::of);
 
         return new GetPageDto<>(pageGetClientDto);
@@ -90,14 +93,14 @@ public class UserService {
 
     }
 
-    public User changeProfile(ChangeProfileDto changeProfileDto, User loggedUser) {
+    public User changeProfile(EditProfileDto editProfileDto, User loggedUser) {
         return userRepository.findById(loggedUser.getId())
                 .map(old -> {
-                    old.setFullName(changeProfileDto.getFullName());
-                    old.setUserName(changeProfileDto.getUsername());
-                    old.setEmail(changeProfileDto.getEmail());
-                    old.setPhoneNumber(changeProfileDto.getPhoneNumber());
-                    old.setImgPath(changeProfileDto.getImgPath());
+                    old.setFullName(editProfileDto.getFullName());
+                    old.setUserName(editProfileDto.getUsername());
+                    old.setEmail(editProfileDto.getEmail());
+                    old.setPhoneNumber(editProfileDto.getPhoneNumber());
+                    old.setImgPath(editProfileDto.getImgPath());
                     return userRepository.save(old);
                 })
                 .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));
@@ -118,5 +121,17 @@ public class UserService {
 
     public void deleteById(UUID id) {
         userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public User getProfile(UUID id) {
+        Optional<User> user = userRepository.userWithPostsById(id);
+
+        if (user.isPresent())
+            postRepository.postComments();
+        else
+            throw new UserNotFoundException(id);
+
+        return user.get();
     }
 }

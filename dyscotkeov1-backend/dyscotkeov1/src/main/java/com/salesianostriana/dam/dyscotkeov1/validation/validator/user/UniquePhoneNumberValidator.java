@@ -1,8 +1,7 @@
-package com.salesianostriana.dam.dyscotkeov1.validation.validator;
+package com.salesianostriana.dam.dyscotkeov1.validation.validator.user;
 
 import com.salesianostriana.dam.dyscotkeov1.user.service.UserService;
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.UniquePhoneNumber;
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.UniqueUserName;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.UniquePhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 

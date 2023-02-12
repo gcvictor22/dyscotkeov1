@@ -1,4 +1,4 @@
-package com.salesianostriana.dam.dyscotkeov1.search.specifications.clients;
+package com.salesianostriana.dam.dyscotkeov1.search.specifications.user;
 
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.search.util.SearchCriteria;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 @Log
 @AllArgsConstructor
-public class ClientSpecification implements Specification<User> {
+public class UserSpecification implements Specification<User> {
 
     private SearchCriteria searchCriteria;
 

@@ -1,6 +1,6 @@
-package com.salesianostriana.dam.dyscotkeov1.validation.validator;
+package com.salesianostriana.dam.dyscotkeov1.validation.validator.user;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.StrongPassword;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.StrongPassword;
 import org.passay.*;
 
 import javax.validation.ConstraintValidator;

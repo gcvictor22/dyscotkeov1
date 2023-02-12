@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.dyscotkeov1.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.salesianostriana.dam.dyscotkeov1.post.dto.GetPostDto;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class UserProfileDto {
     private String imgPath;
     private List<GetUserDto> follows;
     private List<GetUserDto> followers;
-    private List<Post> publishedPosts;
+    private List<GetPostDto> publishedPosts;
     private List<Post> likedPosts;
     private boolean verified;
 
@@ -38,7 +39,7 @@ public class UserProfileDto {
                 .createdAt(user.getCreatedAt())
                 .follows(user.getFollows().stream().map(GetUserDto::of).collect(Collectors.toList()))
                 .followers(user.getFollowers().stream().map(GetUserDto::of).collect(Collectors.toList()))
-                .publishedPosts(user.getPublishedPosts())
+                .publishedPosts(user.getPublishedPosts().stream().map(GetPostDto::of).toList())
                 .likedPosts(user.getLikedPosts())
                 .verified(user.isVerified())
                 .build();
