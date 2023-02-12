@@ -25,6 +25,7 @@ public class GetUserDto {
     protected String imgPath;
     protected int followers;
     protected int countOfPosts;
+    protected boolean verified;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     protected LocalDateTime createdAt;
@@ -37,6 +38,7 @@ public class GetUserDto {
                 .imgPath(c.getImgPath())
                 .followers(c.getFollowers() == null ? 0 : c.getFollowers().size())
                 .countOfPosts(c.getPublishedPosts() == null ? 0 : c.getPublishedPosts().size())
+                .verified(c.isVerified())
                 .createdAt(c.getCreatedAt())
                 .build();
     }

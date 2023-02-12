@@ -23,6 +23,7 @@ public class JwtUserResponse extends GetUserDto{
         createdAt = user.getCreatedAt();
         followers = user.getFollowers();
         countOfPosts = user.getCountOfPosts();
+        verified = user.isVerified();
     }
 
     public static JwtUserResponse of (User user, String token) {
