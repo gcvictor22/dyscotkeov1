@@ -72,13 +72,10 @@ public class User implements UserDetails {
     @Builder.Default
     private List<User> follows = new ArrayList<>();
 
-    @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     @OrderColumn
     private List<Post> publishedPosts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userWhoComment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> commentsInPosts = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(joinColumns = @JoinColumn(name = "user_id",

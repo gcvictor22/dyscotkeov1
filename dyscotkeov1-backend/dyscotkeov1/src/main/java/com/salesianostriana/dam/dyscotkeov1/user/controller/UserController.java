@@ -90,22 +90,30 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
     }
 
-    @PutMapping("/change/password")
-    public GetUserDto changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto,
+    @PutMapping("/edit/password")
+    public GetUserDto changePassword(@Valid @RequestBody ChangePasswordDto editPasswordDto,
                                                        @AuthenticationPrincipal User loggedUser) {
 
-        User updateUser = userService.changePassword(loggedUser, changePasswordDto.getNewPassword());
+        User updateUser = userService.changePassword(loggedUser, editPasswordDto.getNewPassword());
 
         return GetUserDto.of(updateUser);
     }
 
-    @PutMapping("/change/profile")
-    public GetUserDto changeProfile(@Valid @RequestBody ChangeProfileDto changeProfileDto,
+    @PutMapping("/edit/profile")
+    public GetUserDto changeProfile(@Valid @RequestBody ChangeProfileDto editProfile,
                                     @AuthenticationPrincipal User loggedUser){
 
-        User updatedUser =  userService.changeProfile(changeProfileDto, loggedUser);
+        User updatedUser =  userService.changeProfile(editProfile, loggedUser);
 
         return GetUserDto.of(updatedUser);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(@AuthenticationPrincipal User loggedUser){
+
+        userService.deleteById(loggedUser.getId());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

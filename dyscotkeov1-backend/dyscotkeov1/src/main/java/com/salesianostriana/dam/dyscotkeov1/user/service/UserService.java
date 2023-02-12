@@ -68,13 +68,7 @@ public class UserService {
     }
 
     public Optional<User> findById(UUID userId) {
-
-        User user = userRepository.findById(userId).get();
-
-        if (userRepository.findById(userId).isEmpty())
-            throw  new UserNotFoundException(userId);
-
-        return Optional.of(user);
+        return userRepository.findById(userId);
     }
 
     public Optional<User> findByUsername(String username) {
@@ -120,5 +114,9 @@ public class UserService {
         userRepository.save(user.get());
 
         return user.get();
+    }
+
+    public void deleteById(UUID id) {
+        userRepository.deleteById(id);
     }
 }
