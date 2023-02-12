@@ -73,7 +73,6 @@ public class User implements UserDetails {
     private List<User> follows = new ArrayList<>();
 
     @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @Builder.Default
     @OrderColumn
     private List<Post> publishedPosts = new ArrayList<>();
 

@@ -5,11 +5,14 @@ import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
+import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +22,7 @@ import java.util.List;
 @Builder
 public class GetPostDto {
 
+    private Long id;
     private String affair;
     private String content;
     private String imgPath;
@@ -31,6 +35,7 @@ public class GetPostDto {
 
     public static GetPostDto of(Post post){
         return GetPostDto.builder()
+                .id(post.getId())
                 .affair(post.getAffair())
                 .content(post.getContent())
                 .imgPath(post.getImgPath())

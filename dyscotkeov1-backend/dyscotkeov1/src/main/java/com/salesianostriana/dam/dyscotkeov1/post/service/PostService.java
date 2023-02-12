@@ -8,9 +8,7 @@ import com.salesianostriana.dam.dyscotkeov1.post.dto.ViewPostDto;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
 import com.salesianostriana.dam.dyscotkeov1.search.specifications.post.PSBuilder;
-import com.salesianostriana.dam.dyscotkeov1.search.specifications.user.USBuilder;
 import com.salesianostriana.dam.dyscotkeov1.search.util.SearchCriteria;
-import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,6 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,14 +46,10 @@ public class PostService {
                 .affair(newPostDto.getAffair())
                 .content(newPostDto.getContent())
                 .imgPath(newPostDto.getImgPath())
-                .userWhoPost(user)
                 .postDate(LocalDateTime.now())
                 .build();
 
-        List<Post> aux = user.getPublishedPosts();
-        aux.add(newPost);
-
-        user.setPublishedPosts(aux);
+        newPost.addUser(user);
         userRepository.save(user);
 
         return newPost;
@@ -69,5 +62,28 @@ public class PostService {
             throw new EntityNotFoundException();
 
         return ViewPostDto.of(post.get());
+    }
+
+    public Optional<Post> findByIdToDelete(Long id){
+        return postRepository.findById(id);
+    }
+
+    public Post edit(Long id, NewPostDto newPostDto) {
+
+        return postRepository.findById(id)
+                .map(old -> {
+                    old.setAffair(newPostDto.getAffair());
+                    old.setContent(newPostDto.getContent());
+                    old.setImgPath(newPostDto.getImgPath());
+                    return postRepository.save(old);
+                }).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public void deleteById(Post post) {
+        User user = post.getUserWhoPost();
+        post.removeUser(user);
+        userRepository.save(user);
+        post.setUserWhoPost(null);
+        postRepository.delete(post);
     }
 }

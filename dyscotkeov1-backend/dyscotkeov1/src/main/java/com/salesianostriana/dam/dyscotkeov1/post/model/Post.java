@@ -3,6 +3,7 @@ package com.salesianostriana.dam.dyscotkeov1.post.model;
 import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.*;
+import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,5 +40,20 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
     private LocalDateTime postDate;
+
+    /******************************/
+    /*           HELPERS           /
+    /******************************/
+
+    public void addUser(User user){
+        this.setUserWhoPost(user);
+        List<Post> aux = user.getPublishedPosts();
+        aux.add(this);
+    }
+
+    public void removeUser(User user){
+        List<Post> aux = user.getPublishedPosts();
+        aux.remove(this);
+    }
 
 }
