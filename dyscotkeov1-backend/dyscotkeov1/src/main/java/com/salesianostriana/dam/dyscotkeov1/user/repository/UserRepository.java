@@ -33,6 +33,6 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
             """)
     Optional<User> userWithPostsByUserName (String userName);
 
-    @EntityGraph("user-with-posts")
+    @EntityGraph(value = "user-with-posts", type = EntityGraph.EntityGraphType.LOAD)
     Optional<User> findDistinctByUserName(String userName);
 }

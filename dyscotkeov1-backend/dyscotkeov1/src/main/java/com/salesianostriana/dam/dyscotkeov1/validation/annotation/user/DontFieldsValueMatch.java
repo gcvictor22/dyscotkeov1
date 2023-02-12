@@ -1,7 +1,6 @@
-package com.salesianostriana.dam.dyscotkeov1.validation.annotation;
+package com.salesianostriana.dam.dyscotkeov1.validation.annotation.user;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.validator.DontFieldsValueMatchValidator;
-import com.salesianostriana.dam.dyscotkeov1.validation.validator.FieldsValueMatchValidator;
+import com.salesianostriana.dam.dyscotkeov1.validation.validator.user.DontFieldsValueMatchValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

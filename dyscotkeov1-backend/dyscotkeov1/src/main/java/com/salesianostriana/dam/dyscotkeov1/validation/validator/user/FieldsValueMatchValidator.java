@@ -1,18 +1,18 @@
-package com.salesianostriana.dam.dyscotkeov1.validation.validator;
+package com.salesianostriana.dam.dyscotkeov1.validation.validator.user;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.annotation.DontFieldsValueMatch;
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.FieldsValueMatch;
 import org.springframework.beans.PropertyAccessorFactory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class DontFieldsValueMatchValidator implements ConstraintValidator<DontFieldsValueMatch, Object> {
+public class FieldsValueMatchValidator implements ConstraintValidator<FieldsValueMatch, Object> {
 
     private String field;
     private String fieldMatch;
 
     @Override
-    public void initialize(DontFieldsValueMatch constraintAnnotation) {
+    public void initialize(FieldsValueMatch constraintAnnotation) {
         this.field = constraintAnnotation.field();
         this.fieldMatch = constraintAnnotation.fieldMatch();
 
@@ -27,7 +27,7 @@ public class DontFieldsValueMatchValidator implements ConstraintValidator<DontFi
                 .forBeanPropertyAccess(o).getPropertyValue(fieldMatch);
 
         if (fieldValue != null) {
-            return !fieldValue.equals(fieldMatchValue);
+            return fieldValue.equals(fieldMatchValue);
         } else {
             return fieldMatchValue == null;
         }

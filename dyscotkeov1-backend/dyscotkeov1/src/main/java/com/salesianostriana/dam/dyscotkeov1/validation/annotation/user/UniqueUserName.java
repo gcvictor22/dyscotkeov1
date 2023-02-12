@@ -1,6 +1,6 @@
-package com.salesianostriana.dam.dyscotkeov1.validation.annotation;
+package com.salesianostriana.dam.dyscotkeov1.validation.annotation.user;
 
-import com.salesianostriana.dam.dyscotkeov1.validation.validator.UniqueUserNameValidator;
+import com.salesianostriana.dam.dyscotkeov1.validation.validator.user.UniqueUserNameValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
