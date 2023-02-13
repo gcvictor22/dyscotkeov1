@@ -4,11 +4,9 @@ import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,19 +56,17 @@ public class Post implements Serializable{
         aux.remove(this);
     }
 
-    public void like(User user){
+    public void like(User user, boolean b){
 
         List<Post> aux1 = user.getLikedPosts();
         List<User> aux2 = this.getUsersWhoLiked();
-        if (!user.getLikedPosts().contains(this) && !this.getUsersWhoLiked().contains(user)){
+        if (!b){
             aux1.add(this);
             aux2.add(user);
         }else {
-            aux1.remove(this);
-            aux2.remove(user);
+            aux1.remove(user.getLikedPosts().indexOf(this)+1);
+            aux2.remove(this.getUsersWhoLiked().indexOf(user)+1);
         }
-        this.setUsersWhoLiked(aux2);
-        user.setLikedPosts(aux1);
     }
 
 }

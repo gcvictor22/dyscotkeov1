@@ -100,20 +100,17 @@ public class PostService {
             throw new EntityNotFoundException();
         }
 
-        List<Post> aux1 = user.getLikedPosts();
-        List<User> aux2 = post.get().getUsersWhoLiked();
-        if (!postRepository.existsLikeByUser(post.get().getId(), user.getId())){
-            aux1.add(post.get());
-            aux2.add(user);
-        }else {
-            aux1.remove(user.getLikedPosts().indexOf(post.get())+1);
-            aux2.remove(post.get().getUsersWhoLiked().indexOf(user)+1);
-        }
+        post.get().like(user, postRepository.existsLikeByUser(post.get().getId(), user.getId()));
 
         postRepository.save(post.get());
         userRepository.save(user);
 
-        return GetPostDto.of(post.get());
-
+        GetPostDto dto = GetPostDto.of(post.get());
+        if (postRepository.existsLikeByUser(post.get().getId(), user.getId())){
+            dto.setUsersWhoLiked(dto.getUsersWhoLiked()+1);
+        }else {
+            dto.setUsersWhoLiked(dto.getUsersWhoLiked()-1);
+        }
+        return dto;
     }
 }
