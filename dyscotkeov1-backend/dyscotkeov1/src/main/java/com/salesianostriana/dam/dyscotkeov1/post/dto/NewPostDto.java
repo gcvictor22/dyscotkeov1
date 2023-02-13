@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -13,11 +15,14 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 public class NewPostDto {
 
+    @Length(max = 25, message = "{newPostDto.affair.max}")
     private String affair;
 
     @NotEmpty(message = "{newPostDto.content.notEmpty}")
+    @Length(max = 250, message = "{newPostDto.content.max}")
     private String content;
 
+    @URL(message = "{newUserDto.imgPath.url}")
     private String imgPath;
 
 }

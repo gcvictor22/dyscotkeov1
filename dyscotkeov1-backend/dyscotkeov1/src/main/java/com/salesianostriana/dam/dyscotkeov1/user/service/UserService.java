@@ -18,10 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -106,13 +104,14 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));
     }
 
-    public User follow(User loggedUser, UUID userToFollowId) {
-        Optional<User> user = userRepository.findById(userToFollowId);
+    public User follow(User loggedUser, String userToFollow) {
+        Optional<User> user = userRepository.findDistinctByUserName(userToFollow);
 
         if (user.isEmpty())
-            throw new UserNotFoundException(userToFollowId);
+            throw new UserNotFoundException(userToFollow);
 
-        loggedUser.giveAFollow(user.get());
+        user.get().giveAFollow(loggedUser, userRepository.checkFollow(loggedUser.getId(), user.get().getId()));
+
         userRepository.save(loggedUser);
         userRepository.save(user.get());
 

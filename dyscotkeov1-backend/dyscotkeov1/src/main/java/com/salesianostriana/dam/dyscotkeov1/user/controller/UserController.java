@@ -81,10 +81,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
     }
 
-    @PostMapping("/follow/{id}")
-    public ResponseEntity<GetUserDto> follow(@AuthenticationPrincipal User loggedUser, @PathVariable UUID id){
+    @PostMapping("/follow/{username}")
+    public ResponseEntity<GetUserDto> follow(@AuthenticationPrincipal User loggedUser, @PathVariable String username){
 
-        User user = userService.follow(loggedUser, id);
+        User user = userService.follow(loggedUser, username);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
     }
