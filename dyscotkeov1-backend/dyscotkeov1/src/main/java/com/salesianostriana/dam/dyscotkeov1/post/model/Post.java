@@ -3,6 +3,7 @@ package com.salesianostriana.dam.dyscotkeov1.post.model;
 import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.parameters.P;
 
 import javax.persistence.*;
@@ -18,7 +19,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+@EntityListeners(AuditingEntityListener.class)
+public class Post implements Serializable{
 
     @Id
     @GeneratedValue
@@ -54,6 +56,21 @@ public class Post {
     public void removeUser(User user){
         List<Post> aux = user.getPublishedPosts();
         aux.remove(this);
+    }
+
+    public void like(User user){
+
+        List<Post> aux1 = user.getLikedPosts();
+        List<User> aux2 = this.getUsersWhoLiked();
+        if (!user.getLikedPosts().contains(this) && !this.getUsersWhoLiked().contains(user)){
+            aux1.add(this);
+            aux2.add(user);
+        }else {
+            aux1.remove(this);
+            aux2.remove(user);
+        }
+        this.setUsersWhoLiked(aux2);
+        user.setLikedPosts(aux1);
     }
 
 }

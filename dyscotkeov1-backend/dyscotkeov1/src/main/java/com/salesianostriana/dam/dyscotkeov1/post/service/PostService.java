@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -49,19 +51,22 @@ public class PostService {
                 .postDate(LocalDateTime.now())
                 .build();
 
-        newPost.addUser(user);
-        userRepository.save(user);
-
-        return newPost;
+        return postRepository.save(newPost);
     }
 
-    public ViewPostDto findById(Long id) {
+    public GetPostDto responseCreate(Post newPost, User user){
+        newPost.addUser(user);
+        userRepository.save(user);
+        return GetPostDto.of(newPost);
+    }
+
+    public Post findById(Long id) {
         Optional<Post> post = postRepository.findById(id);
 
         if (post.isEmpty())
             throw new EntityNotFoundException();
 
-        return ViewPostDto.of(post.get());
+        return post.get();
     }
 
     public Optional<Post> findByIdToDelete(Long id){
@@ -85,5 +90,30 @@ public class PostService {
         userRepository.save(user);
         post.setUserWhoPost(null);
         postRepository.delete(post);
+    }
+
+    public GetPostDto likeAPost(Long id, User user) {
+
+        Optional<Post> post = postRepository.findById(id);
+
+        if (post.isEmpty()){
+            throw new EntityNotFoundException();
+        }
+
+        List<Post> aux1 = user.getLikedPosts();
+        List<User> aux2 = post.get().getUsersWhoLiked();
+        if (!postRepository.existsLikeByUser(post.get().getId(), user.getId())){
+            aux1.add(post.get());
+            aux2.add(user);
+        }else {
+            aux1.remove(user.getLikedPosts().indexOf(post.get())+1);
+            aux2.remove(post.get().getUsersWhoLiked().indexOf(user)+1);
+        }
+
+        postRepository.save(post.get());
+        userRepository.save(user);
+
+        return GetPostDto.of(post.get());
+
     }
 }

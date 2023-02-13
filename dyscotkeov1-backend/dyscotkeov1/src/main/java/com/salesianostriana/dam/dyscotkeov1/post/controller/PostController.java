@@ -43,7 +43,8 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ViewPostDto viewPost(@PathVariable Long id){
-        return postService.findById(id);
+        Post post = postService.findById(id);
+        return ViewPostDto.of(post);
     }
 
     @PostMapping("/")
@@ -55,7 +56,7 @@ public class PostController {
                 .path("/{id}")
                 .buildAndExpand(created.getId()).toUri();
 
-        return ResponseEntity.created(createdURI).body(GetPostDto.of(created));
+        return ResponseEntity.created(createdURI).body(postService.responseCreate(created, user));
     }
 
     @PutMapping("/{id}")
@@ -75,6 +76,14 @@ public class PostController {
         }
 
         throw new EntityNotFoundException();
+    }
+
+    @PostMapping("/like/{id}")
+    public ResponseEntity<GetPostDto> like(@PathVariable Long id, @AuthenticationPrincipal User user){
+
+        GetPostDto getPostDto = postService.likeAPost(id, user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(getPostDto);
     }
 
 }

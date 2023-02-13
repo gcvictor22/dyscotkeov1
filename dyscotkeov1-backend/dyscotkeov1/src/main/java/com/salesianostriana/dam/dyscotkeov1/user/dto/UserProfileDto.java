@@ -25,7 +25,7 @@ public class UserProfileDto {
     private List<GetUserDto> follows;
     private List<GetUserDto> followers;
     private List<GetPostDto> publishedPosts;
-    private List<Post> likedPosts;
+    private List<GetPostDto> likedPosts;
     private boolean verified;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
@@ -40,7 +40,7 @@ public class UserProfileDto {
                 .follows(user.getFollows().stream().map(GetUserDto::of).collect(Collectors.toList()))
                 .followers(user.getFollowers().stream().map(GetUserDto::of).collect(Collectors.toList()))
                 .publishedPosts(user.getPublishedPosts().stream().map(GetPostDto::of).toList())
-                .likedPosts(user.getLikedPosts())
+                .likedPosts(user.getLikedPosts().stream().map(GetPostDto::of).toList())
                 .verified(user.isVerified())
                 .build();
     }
