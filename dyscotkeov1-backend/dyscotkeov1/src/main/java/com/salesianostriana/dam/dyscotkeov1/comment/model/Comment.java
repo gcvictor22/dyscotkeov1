@@ -31,6 +31,34 @@ public class Comment implements Serializable {
     @JoinColumn(name = "commentedPost", foreignKey = @ForeignKey(name = "FK_COMMENT_POST"))
     private Post commentedPost;
 
+    private String imgPath;
+
     private LocalDate publishedDate;
+
+    /******************************/
+    /*           HELPERS           /
+    /******************************/
+
+    public void addPost(Post p){
+        this.commentedPost = p;
+        List<Comment> aux = p.getComments();
+        aux.add(this);
+        p.setComments(aux);
+    }
+
+    public void removePost(Post p){
+        this.commentedPost = null;
+        List<Comment> aux = p.getComments();
+        aux.remove(this);
+        p.setComments(aux);
+    }
+
+    public void addUser(User u){
+        this.userWhoComment = u;
+    }
+
+    public void removeUser(){
+        this.userWhoComment = null;
+    }
 
 }
