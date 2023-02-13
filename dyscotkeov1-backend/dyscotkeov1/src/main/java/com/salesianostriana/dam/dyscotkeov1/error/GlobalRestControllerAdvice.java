@@ -110,58 +110,27 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({ AuthenticationException.class })
-    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, HttpServletRequest request) {
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .header("WWW-Authenticate", "Bearer")
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI()));
+                .body(buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED));
 
     }
 
     @ExceptionHandler({ AccessDeniedException.class })
-    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI()));
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
 
     }
 
-
     @ExceptionHandler({JwtTokenException.class})
-    public ResponseEntity<?> handleTokenException(JwtTokenException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI()));
+    public ResponseEntity<?> handleTokenException(JwtTokenException ex, WebRequest request) {
+        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({UsernameNotFoundException.class})
-    public ResponseEntity<?> handleUserNotExistsException(UsernameNotFoundException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(
-                        HttpStatus.UNAUTHORIZED,
-                        ex.getMessage(),
-                        request.getRequestURI()
-                ));
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class ErrorMessage {
-
-        private HttpStatus status;
-        private String message, path;
-
-        @Builder.Default
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm:ss")
-        private LocalDateTime dateTime = LocalDateTime.now();
-
-        public static GlobalRestControllerAdvice.ErrorMessage of (HttpStatus status, String message, String path) {
-            return GlobalRestControllerAdvice.ErrorMessage.builder()
-                    .status(status)
-                    .message(message)
-                    .path(path)
-                    .build();
-        }
-
+    public ResponseEntity<?> handleUserNotExistsException(UsernameNotFoundException ex, WebRequest request) {
+        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
     }
 
 }
