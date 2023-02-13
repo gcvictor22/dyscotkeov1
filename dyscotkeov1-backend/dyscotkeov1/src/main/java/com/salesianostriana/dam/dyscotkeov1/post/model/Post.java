@@ -67,6 +67,8 @@ public class Post implements Serializable{
             aux1.remove(user.getLikedPosts().indexOf(this)+1);
             aux2.remove(this.getUsersWhoLiked().indexOf(user)+1);
         }
+        this.setUsersWhoLiked(aux2);
+        user.setLikedPosts(aux1);
     }
 
 }
