@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/post")
@@ -67,11 +66,11 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Long id, @AuthenticationPrincipal User user){
+    public ResponseEntity<?> deletePost(@PathVariable Long id, @AuthenticationPrincipal User user) {
         Optional<Post> post = postService.findByIdToDelete(id);
 
         if (post.isPresent()){
-            postService.deleteById(post.get());
+            postService.deleteById(post.get(), user);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 

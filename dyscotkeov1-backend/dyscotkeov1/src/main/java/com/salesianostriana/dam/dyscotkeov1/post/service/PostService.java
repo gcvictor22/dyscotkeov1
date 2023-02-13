@@ -1,5 +1,7 @@
 package com.salesianostriana.dam.dyscotkeov1.post.service;
 
+import com.salesianostriana.dam.dyscotkeov1.error.GlobalRestControllerAdvice;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.PostAccessDeniedException;
 import com.salesianostriana.dam.dyscotkeov1.exception.empty.EmptyPostListException;
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.PostNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.page.dto.GetPageDto;
@@ -15,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.support.WebRequestDataBinder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -81,12 +85,16 @@ public class PostService {
                 }).orElseThrow(() -> new  PostNotFoundException(id));
     }
 
-    public void deleteById(Post post) {
-        User user = post.getUserWhoPost();
-        post.removeUser(user);
-        userRepository.save(user);
-        post.setUserWhoPost(null);
-        postRepository.delete(post);
+    public void deleteById(Post post, User loggedUser) {
+        if (loggedUser.getId() == post.getUserWhoPost().getId()){
+            User user = post.getUserWhoPost();
+            post.removeUser(user);
+            userRepository.save(user);
+            post.setUserWhoPost(null);
+            postRepository.delete(post);
+        }else {
+            throw new PostAccessDeniedException("No puedes borrar una publicación de otro usuario");
+        }
     }
 
     public GetPostDto likeAPost(Long id, User user) {

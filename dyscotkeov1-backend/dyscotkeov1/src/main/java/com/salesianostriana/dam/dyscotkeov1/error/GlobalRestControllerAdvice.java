@@ -119,18 +119,18 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
-        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
+        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
 
     }
 
     @ExceptionHandler({JwtTokenException.class})
     public ResponseEntity<?> handleTokenException(JwtTokenException ex, WebRequest request) {
-        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
+        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({UsernameNotFoundException.class})
     public ResponseEntity<?> handleUserNotExistsException(UsernameNotFoundException ex, WebRequest request) {
-        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
+        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
     }
 
 }
