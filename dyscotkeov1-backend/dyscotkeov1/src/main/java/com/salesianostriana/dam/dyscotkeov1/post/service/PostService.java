@@ -1,10 +1,10 @@
 package com.salesianostriana.dam.dyscotkeov1.post.service;
 
-import com.salesianostriana.dam.dyscotkeov1.exception.empty.EmptyUserListException;
+import com.salesianostriana.dam.dyscotkeov1.exception.empty.EmptyPostListException;
+import com.salesianostriana.dam.dyscotkeov1.exception.notfound.PostNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.page.dto.GetPageDto;
 import com.salesianostriana.dam.dyscotkeov1.post.dto.GetPostDto;
 import com.salesianostriana.dam.dyscotkeov1.post.dto.NewPostDto;
-import com.salesianostriana.dam.dyscotkeov1.post.dto.ViewPostDto;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
 import com.salesianostriana.dam.dyscotkeov1.search.specifications.post.PSBuilder;
@@ -15,11 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +30,7 @@ public class PostService {
 
     public GetPageDto<GetPostDto> findAll(List<SearchCriteria> params, Pageable pageable) {
         if (postRepository.findAll().isEmpty())
-            throw new EmptyUserListException();
+            throw new EmptyPostListException();
 
         PSBuilder psBuilder = new PSBuilder(params);
 
@@ -64,7 +61,7 @@ public class PostService {
         Optional<Post> post = postRepository.findById(id);
 
         if (post.isEmpty())
-            throw new EntityNotFoundException();
+            throw new PostNotFoundException(id);
 
         return post.get();
     }
@@ -81,7 +78,7 @@ public class PostService {
                     old.setContent(newPostDto.getContent());
                     old.setImgPath(newPostDto.getImgPath());
                     return postRepository.save(old);
-                }).orElseThrow(EntityNotFoundException::new);
+                }).orElseThrow(() -> new  PostNotFoundException(id));
     }
 
     public void deleteById(Post post) {
@@ -97,7 +94,7 @@ public class PostService {
         Optional<Post> post = postRepository.findById(id);
 
         if (post.isEmpty()){
-            throw new EntityNotFoundException();
+            throw new PostNotFoundException(id);
         }
 
         post.get().like(user, postRepository.existsLikeByUser(post.get().getId(), user.getId()));

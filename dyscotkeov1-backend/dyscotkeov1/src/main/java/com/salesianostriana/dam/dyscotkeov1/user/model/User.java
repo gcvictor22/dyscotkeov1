@@ -148,14 +148,17 @@ public class User implements UserDetails {
     /*           HELPERS           /
     /******************************/
 
-    public void giveAFollow(User userToFollow){
-        if (!userToFollow.getFollowers().contains(this) && !this.follows.contains(userToFollow)){
-            userToFollow.followers.add(this);
-            this.follows.add(userToFollow);
-            if (userToFollow.getFollowers().size() >= 1){
-                userToFollow.setVerified(true);
-                userToFollow.setRoles(EnumSet.of(UserRole.USER, UserRole.VERIFIED));
-            }
+    public void giveAFollow(User loggedUser, boolean b){
+        List<User> aux1 = this.getFollowers();
+        List<User> aux2 = loggedUser.getFollows();
+        if (!b && aux1.size() > 0 && aux2.size() > 0){
+            aux1.remove(this.getFollowers().indexOf(loggedUser)+1);
+            aux2.remove(loggedUser.getFollows().indexOf(this)+1);
+        }else {
+            aux1.add(loggedUser);
+            aux2.add(this);
         }
+        this.setFollowers(aux1);
+        loggedUser.setFollows(aux2);
     }
 }
