@@ -157,6 +157,9 @@ public class User implements UserDetails {
         }else {
             aux1.add(loggedUser);
             aux2.add(this);
+            if (aux1.size()>=10){
+                this.setVerified(true);
+            }
         }
         this.setFollowers(aux1);
         loggedUser.setFollows(aux2);

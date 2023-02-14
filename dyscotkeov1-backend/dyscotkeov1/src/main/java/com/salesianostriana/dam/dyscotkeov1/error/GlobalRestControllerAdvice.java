@@ -3,6 +3,10 @@ package com.salesianostriana.dam.dyscotkeov1.error;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.salesianostriana.dam.dyscotkeov1.error.model.impl.ApiErrorImpl;
 import com.salesianostriana.dam.dyscotkeov1.error.model.impl.ApiValidationSubError;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.CommentDeniedAccessException;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.PostAccessDeniedExeption;
+import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.CommentBadRequestToDeleteException;
+import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.PostBadRequestToDeleteException;
 import com.salesianostriana.dam.dyscotkeov1.exception.token.JwtTokenException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +49,26 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler({EntityNotFoundException.class})
     public ResponseEntity<?> handleNotFoundException(EntityNotFoundException exception, WebRequest request) {
         return buildApiError(exception.getMessage(), request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({PostAccessDeniedExeption.class})
+    public ResponseEntity<?> handleForbiddenException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler({CommentDeniedAccessException.class})
+    public ResponseEntity<?> handleForbiddenCommentException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler({PostBadRequestToDeleteException.class})
+    public ResponseEntity<?> handleBadRequestException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({CommentBadRequestToDeleteException.class})
+    public ResponseEntity<?> handleBadRequestCommentException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.BAD_REQUEST);
     }
 
 

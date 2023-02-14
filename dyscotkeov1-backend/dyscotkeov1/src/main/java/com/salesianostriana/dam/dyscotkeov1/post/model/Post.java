@@ -52,6 +52,7 @@ public class Post implements Serializable{
     }
 
     public void removeUser(User user){
+        this.setUserWhoPost(null);
         List<Post> aux = user.getPublishedPosts();
         aux.remove(this);
     }

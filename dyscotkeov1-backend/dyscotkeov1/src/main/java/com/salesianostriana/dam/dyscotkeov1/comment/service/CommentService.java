@@ -4,6 +4,9 @@ import com.salesianostriana.dam.dyscotkeov1.comment.dto.GetCommentDto;
 import com.salesianostriana.dam.dyscotkeov1.comment.dto.NewCommentDto;
 import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
 import com.salesianostriana.dam.dyscotkeov1.comment.repository.CommentRespository;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.CommentDeniedAccessException;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.PostAccessDeniedExeption;
+import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.CommentBadRequestToDeleteException;
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.CommentNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.PostNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.post.dto.ViewPostDto;
@@ -12,6 +15,7 @@ import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.tool.schema.spi.CommandAcceptanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,54 +39,48 @@ public class CommentService {
     }
 
     public ViewPostDto responseComment(Comment comment, Long id, User user){
-        Optional<Post> post = postRepository.findById(id);
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (post.isEmpty())
-            throw new PostNotFoundException(id);
-
-        comment.addPost(post.get());
+        comment.addPost(post);
         comment.addUser(user);
-        postRepository.save(post.get());
+        postRepository.save(post);
         commentRespository.save(comment);
 
-        return ViewPostDto.of(post.get());
+        return ViewPostDto.of(post);
     }
 
-    public Post edit(NewCommentDto newCommentDto, Long id) {
+    public Post edit(NewCommentDto newCommentDto, Long id, User loggedUser) {
 
-        Optional<Comment> comment = commentRespository.findById(id);
+        Comment comment = commentRespository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
+        Post post = postRepository.findById(comment.getCommentedPost().getId()).orElseThrow(() -> new PostNotFoundException(comment.getCommentedPost().getId()));
 
-        if (comment.isPresent()){
-            Optional<Post> post = postRepository.findById(comment.get().getCommentedPost().getId());
-            if (post.isPresent() && post.get().getComments().contains(comment.get())){
-                comment.map(old -> {
-                    old.setContent(newCommentDto.getContent());
-                    old.setImgPath(newCommentDto.getImgPath());
-                    return commentRespository.save(old);
-                });
-                return post.get();
-            }
-            throw new PostNotFoundException(comment.get().getCommentedPost().getId());
+        if (loggedUser.getId() != comment.getUserWhoComment().getId()){
+            throw new CommentDeniedAccessException();
         }
-        throw new CommentNotFoundException(id);
+        if (!post.getComments().contains(comment)){
+            throw new CommentNotFoundException(id);
+        }
+        commentRespository.findById(id).map(old -> {
+            old.setContent(newCommentDto.getContent());
+            old.setImgPath(newCommentDto.getImgPath());
+            return commentRespository.save(old);
+        });
+        return post;
     }
 
-    public ResponseEntity<?> delete(Long id){
-        Optional<Comment> comment = commentRespository.findById(id);
+    public ResponseEntity<?> delete(Long id, User loggedUser){
+        Comment comment = commentRespository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
+        Post post = postRepository.findById(comment.getCommentedPost().getId()).orElseThrow(() -> new PostNotFoundException(comment.getCommentedPost().getId()));
 
-        if (comment.isPresent()) {
-            Optional<Post> post = postRepository.findById(comment.get().getCommentedPost().getId());
-            if (post.isPresent()) {
-                if (post.get().getComments().contains(comment.get())){
-                    comment.get().removePost(comment.get().getCommentedPost());
-                    comment.get().removeUser();
-                    commentRespository.delete(comment.get());
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-                }
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-            }
-            throw new PostNotFoundException(comment.get().getCommentedPost().getId());
+        if (loggedUser.getId() != comment.getUserWhoComment().getId()){
+            throw new CommentDeniedAccessException();
         }
-        throw new CommentNotFoundException(id);
+        if (!post.getComments().contains(comment)){
+            throw new CommentBadRequestToDeleteException(id);
+        }
+        comment.removePost(comment.getCommentedPost());
+        comment.removeUser();
+        commentRespository.delete(comment);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -74,7 +74,7 @@ public class SecurityConfig {
                                 .authorizeRequests()
                                 .antMatchers("/user/**").hasRole("USER")
                                 .antMatchers("/post/**").hasRole("USER")
-                                .antMatchers("/comment/**").hasRole("USER")
+                                .antMatchers("/comment/**").hasRole("VERIFIED")
                                 .anyRequest().authenticated();
 
 
