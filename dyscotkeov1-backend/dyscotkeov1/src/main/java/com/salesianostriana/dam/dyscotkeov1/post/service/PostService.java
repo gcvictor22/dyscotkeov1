@@ -89,9 +89,10 @@ public class PostService {
     public ResponseEntity<?> deleteById(Long id, User loggedUser) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostBadRequestToDeleteException(id));
 
-        if (loggedUser.getId() != post.getUserWhoPost().getId()){
+        if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername())){
             throw new PostAccessDeniedExeption();
         }
+
         post.removeUser(loggedUser);
         userRepository.save(loggedUser);
         postRepository.delete(post);
