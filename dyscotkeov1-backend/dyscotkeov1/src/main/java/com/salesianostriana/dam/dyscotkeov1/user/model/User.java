@@ -26,14 +26,8 @@ import java.util.stream.Collectors;
 @NamedEntityGraph
         (name="user-with-posts",
                 attributeNodes = {
-                        @NamedAttributeNode(value = "publishedPosts",
-                                subgraph = "posts-with-comments")
-                }, subgraphs = {
-                @NamedSubgraph(name="posts-with-comments",
-                        attributeNodes = {
-                                @NamedAttributeNode(value = "comments")
-                        })
-        })
+                        @NamedAttributeNode(value = "publishedPosts")
+                })
 public class User implements UserDetails {
 
     @Id
@@ -73,7 +67,7 @@ public class User implements UserDetails {
     private List<User> follows = new ArrayList<>();
 
     @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @OrderColumn
+    @Builder.Default
     private List<Post> publishedPosts = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)

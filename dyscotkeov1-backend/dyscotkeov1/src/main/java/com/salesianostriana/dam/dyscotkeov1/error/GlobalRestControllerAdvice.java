@@ -135,7 +135,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ AuthenticationException.class })
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
-        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
+        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
 
     }
 
