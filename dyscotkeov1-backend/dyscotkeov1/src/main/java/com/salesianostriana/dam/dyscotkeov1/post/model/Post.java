@@ -51,10 +51,10 @@ public class Post implements Serializable{
         aux.add(this);
     }
 
-    public void removeUser(User user){
-        this.setUserWhoPost(null);
-        List<Post> aux = user.getPublishedPosts();
-        aux.remove(this);
+    public void preRemove(User user){
+        this.getComments().clear();
+        this.getUsersWhoLiked().clear();
+        user.getPublishedPosts().remove(this);
     }
 
     public void like(User user, boolean b){

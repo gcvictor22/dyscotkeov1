@@ -55,7 +55,7 @@ public class UserController {
         return UserProfileDto.of(userService.getProfile(id));
     }
 
-    @GetMapping("/{userName}")
+    @GetMapping("userName/{userName}")
     public UserProfileDto viewUserProfile(@PathVariable String userName){
         return UserProfileDto.of(userService.getProfileByUserName(userName));
     }

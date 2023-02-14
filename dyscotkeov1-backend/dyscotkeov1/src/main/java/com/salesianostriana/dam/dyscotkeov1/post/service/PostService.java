@@ -27,6 +27,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -94,8 +95,14 @@ public class PostService {
             throw new PostAccessDeniedExeption();
         }
 
-        post.removeUser(loggedUser);
-        userRepository.save(loggedUser);
+        for (int i = 0; i < post.getUsersWhoLiked().size(); i++) {
+            User u = post.getUsersWhoLiked().get(i);
+            u.getLikedPosts().remove(post);
+            userRepository.save(u);
+        }
+        User user = post.getUserWhoPost();
+        post.preRemove(user);
+        userRepository.save(user);
         postRepository.delete(post);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

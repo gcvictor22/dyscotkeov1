@@ -77,6 +77,7 @@ public class User implements UserDetails {
                     foreignKey = @ForeignKey(name="FK_LIKEDPOSTS_POSTS")),
             name = "likedposts"
     )
+    @Builder.Default
     private List<Post> likedPosts = new ArrayList<>();
 
     private boolean verified;
