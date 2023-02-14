@@ -95,14 +95,6 @@ public class PostService {
             throw new PostAccessDeniedExeption();
         }
 
-        for (int i = 0; i < post.getUsersWhoLiked().size(); i++) {
-            User u = post.getUsersWhoLiked().get(i);
-            u.getLikedPosts().remove(post);
-            userRepository.save(u);
-        }
-        User user = post.getUserWhoPost();
-        post.preRemove(user);
-        userRepository.save(user);
         postRepository.delete(post);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
