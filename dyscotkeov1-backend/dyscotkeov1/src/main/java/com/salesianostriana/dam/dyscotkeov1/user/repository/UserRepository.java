@@ -47,4 +47,12 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
             AND f.id = :id2
             """)
     boolean checkFollow(@Param("id1") UUID id1, @Param("id2") UUID id2);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(u) > 0 THEN false ELSE true END
+            FROM User u
+            WHERE u.id = :id1
+            AND NOT EXISTS (SELECT lu FROM u.follows lu WHERE lu.id = :id2)
+            """)
+    boolean checkFollower(@Param("id1") UUID id1, @Param("id2") UUID id2);
 }

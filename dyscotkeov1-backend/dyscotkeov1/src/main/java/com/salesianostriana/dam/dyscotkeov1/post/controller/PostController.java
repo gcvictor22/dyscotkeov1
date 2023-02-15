@@ -73,9 +73,9 @@ public class PostController {
     @PostMapping("/like/{id}")
     public ResponseEntity<GetPostDto> like(@PathVariable Long id, @AuthenticationPrincipal User user){
 
-        GetPostDto getPostDto = postService.likeAPost(id, user);
+        GetPostDto post = postService.likeAPost(id, user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(getPostDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
 
 }

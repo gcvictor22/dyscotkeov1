@@ -32,7 +32,6 @@ public class EditPasswordDto {
     private String newPassword;
 
     @NotEmpty(message = "{changePasswordDto.verifypassword.notempty}")
-    @StrongPassword
     private String newPasswordVerify;
 
 }
