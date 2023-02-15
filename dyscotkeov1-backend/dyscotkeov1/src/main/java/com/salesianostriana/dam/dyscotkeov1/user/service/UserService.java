@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -63,6 +64,7 @@ public class UserService {
 
         return userRepository.findById(loggedUser.getId())
                 .map(old -> {
+                    old.setLastPasswordChangeAt(LocalDateTime.now());
                     old.setPassword(changePasswordDto);
                     return userRepository.save(old);
                 })
