@@ -160,4 +160,24 @@ public class User implements UserDetails {
         this.setFollowers(aux1);
         loggedUser.setFollows(aux2);
     }
+
+    @PreRemove
+    public void preRevome(){
+        this.followers.forEach(f -> {
+            f.follows.remove(this);
+        });
+        this.follows.forEach(f -> {
+            f.followers.remove(this);
+        });
+        this.likedPosts.forEach(p -> {
+            p.getUsersWhoLiked().remove(this);
+        });
+        this.publishedPosts.forEach(p -> {
+            p.setUserWhoPost(null);
+            p.getComments().forEach(c -> {
+                c.setUserWhoComment(null);
+            });
+            p.getComments().clear();
+        });
+    }
 }

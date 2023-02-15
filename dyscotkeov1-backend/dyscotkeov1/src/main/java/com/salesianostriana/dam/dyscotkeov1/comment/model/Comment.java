@@ -46,19 +46,17 @@ public class Comment implements Serializable {
         p.setComments(aux);
     }
 
-    public void removePost(Post p){
-        this.commentedPost = null;
-        List<Comment> aux = p.getComments();
-        aux.remove(this);
-        p.setComments(aux);
+    @PreRemove
+    public void removePost(){
+        if (this.userWhoComment != null)
+            this.userWhoComment = null;
+        if (this.commentedPost != null)
+            this.commentedPost.getComments().remove(this);
     }
 
     public void addUser(User u){
         this.userWhoComment = u;
     }
 
-    public void removeUser(){
-        this.userWhoComment = null;
-    }
 
 }

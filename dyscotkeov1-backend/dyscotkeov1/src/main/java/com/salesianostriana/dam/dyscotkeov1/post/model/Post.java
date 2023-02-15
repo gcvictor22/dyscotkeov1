@@ -53,8 +53,8 @@ public class Post implements Serializable{
 
     @PreRemove
     public void preRemove(){
-        this.userWhoPost.getPublishedPosts().remove(this);
-
+        if (this.userWhoPost != null)
+            this.userWhoPost.getPublishedPosts().remove(this);
         this.getUsersWhoLiked().forEach(u -> {
             u.getLikedPosts().remove(this);
         });

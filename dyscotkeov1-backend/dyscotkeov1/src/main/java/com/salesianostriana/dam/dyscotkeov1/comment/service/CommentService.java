@@ -78,8 +78,7 @@ public class CommentService {
         if (!post.getComments().contains(comment)){
             throw new CommentBadRequestToDeleteException(id);
         }
-        comment.removePost(comment.getCommentedPost());
-        comment.removeUser();
+        comment.removePost();
         commentRespository.delete(comment);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
