@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<GetUserDto> createUserWithUserRole(@Valid @RequestBody NewUserDto newUserDto) {
+    public ResponseEntity<GetUserDto> createUser(@Valid @RequestBody NewUserDto newUserDto) {
         User user = userService.createUser(newUserDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));

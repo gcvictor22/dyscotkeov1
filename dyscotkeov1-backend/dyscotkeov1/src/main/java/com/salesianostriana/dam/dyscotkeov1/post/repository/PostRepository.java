@@ -19,7 +19,10 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     List<Post> postComments();
 
     @Query("""
-            SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END
-            FROM Post p JOIN p.usersWhoLiked l WHERE p.id = :postId AND l.id = :userId""")
+            SELECT CASE WHEN COUNT(p) > 0 THEN false ELSE true END
+            FROM Post p
+            WHERE p.id = :postId
+            AND NOT EXISTS (SELECT ul FROM p.usersWhoLiked ul WHERE ul.id = :userId)
+            """)
     boolean existsLikeByUser(@Param("postId") Long postId, @Param("userId") UUID userId);
 }

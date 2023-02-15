@@ -102,12 +102,22 @@ public class PostService {
     public GetPostDto likeAPost(Long id, User loggedUser) {
 
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+        boolean b = postRepository.existsLikeByUser(post.getId(), loggedUser.getId());
 
-        post.like(loggedUser, postRepository.existsLikeByUser(post.getId(), loggedUser.getId()));
+        post.like(loggedUser, b);
 
         postRepository.save(post);
         userRepository.save(loggedUser);
 
-        return GetPostDto.of(post);
+        GetPostDto dto = GetPostDto.of(post);
+        if (Objects.equals(dto.getUserWhoPost(), loggedUser.getUsername())){
+            if (b){
+                dto.setUsersWhoLiked(dto.getUsersWhoLiked()-1);
+            }else {
+                dto.setUsersWhoLiked(dto.getUsersWhoLiked()+1);
+            }
+        }
+
+        return dto;
     }
 }

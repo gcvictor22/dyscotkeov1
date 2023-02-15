@@ -152,7 +152,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({UsernameNotFoundException.class})
     public ResponseEntity<?> handleUserNotExistsException(UsernameNotFoundException ex, WebRequest request) {
-        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
+        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
     }
 
 }

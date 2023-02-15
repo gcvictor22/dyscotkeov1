@@ -86,7 +86,7 @@ public class UserService {
     public User follow(User loggedUser, String userToFollow) {
         User user = userRepository.findDistinctByUserName(userToFollow).orElseThrow(() -> new UserNotFoundException(userToFollow));
 
-        user.giveAFollow(loggedUser, userRepository.checkFollow(loggedUser.getId(), user.getId()));
+        user.giveAFollow(loggedUser, userRepository.checkFollower(loggedUser.getId(), user.getId()));
 
         userRepository.save(loggedUser);
         userRepository.save(user);
@@ -121,11 +121,11 @@ public class UserService {
     }
 
     public boolean existsByEmail(String e) {
-        return userRepository.existsByUserName(e);
+        return userRepository.existsByEmail(e);
     }
 
     public boolean existsByPhoneNumber(String p) {
-        return userRepository.existsByUserName(p);
+        return userRepository.existsByPhoneNumber(p);
     }
 
     public Optional<User> findById(UUID userId) {

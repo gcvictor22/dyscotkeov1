@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -72,7 +73,7 @@ public class CommentService {
         Comment comment = commentRespository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
         Post post = postRepository.findById(comment.getCommentedPost().getId()).orElseThrow(() -> new PostNotFoundException(comment.getCommentedPost().getId()));
 
-        if (loggedUser.getId() != comment.getUserWhoComment().getId()){
+        if (!loggedUser.getUsername().equalsIgnoreCase(comment.getUserWhoComment().getUsername())){
             throw new CommentDeniedAccessException();
         }
         if (!post.getComments().contains(comment)){

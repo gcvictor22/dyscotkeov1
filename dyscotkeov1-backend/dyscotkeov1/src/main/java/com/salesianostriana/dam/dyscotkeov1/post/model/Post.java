@@ -58,20 +58,19 @@ public class Post implements Serializable{
         this.getUsersWhoLiked().forEach(u -> {
             u.getLikedPosts().remove(this);
         });
-
-        this.getUsersWhoLiked().clear();
+        this.comments.clear();
+        this.usersWhoLiked.clear();
     }
 
     public void like(User user, boolean b){
-
         List<Post> aux1 = user.getLikedPosts();
         List<User> aux2 = this.getUsersWhoLiked();
-        if (!b){
-            aux1.add(this);
-            aux2.add(user);
-        }else {
+        if (b){
             aux1.remove(user.getLikedPosts().indexOf(this)+1);
             aux2.remove(this.getUsersWhoLiked().indexOf(user)+1);
+        }else {
+            aux1.add(this);
+            aux2.add(user);
         }
         this.setUsersWhoLiked(aux2);
         user.setLikedPosts(aux1);
