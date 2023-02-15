@@ -44,9 +44,6 @@ public class NewUserDto {
     @UniquePhoneNumber(message = "{newUserDto.phone.unique}")
     private String phoneNumber;
 
-    @URL(message = "{newUserDto.imgPath.url}")
-    private String imgPath;
-
     private LocalDateTime createdAt = LocalDateTime.now();
 
 }

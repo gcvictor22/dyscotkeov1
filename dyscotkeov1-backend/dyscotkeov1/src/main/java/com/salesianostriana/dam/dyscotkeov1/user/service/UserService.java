@@ -47,7 +47,6 @@ public class UserService {
                 .password(passwordEncoder.encode(createUser.getPassword()))
                 .email(createUser.getEmail())
                 .phoneNumber(createUser.getPhoneNumber())
-                .imgPath(createUser.getImgPath())
                 .fullName(createUser.getFullName())
                 .roles(roles)
                 .createdAt(createUser.getCreatedAt())
@@ -132,5 +131,10 @@ public class UserService {
 
     public Optional<User> findById(UUID userId) {
         return userRepository.findById(userId);
+    }
+
+    public void setImg(String imgPath, User user) {
+        user.setImgPath(imgPath);
+        userRepository.save(user);
     }
 }
