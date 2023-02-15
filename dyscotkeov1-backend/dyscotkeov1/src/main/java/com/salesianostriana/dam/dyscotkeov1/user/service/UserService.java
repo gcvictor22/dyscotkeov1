@@ -1,6 +1,8 @@
 package com.salesianostriana.dam.dyscotkeov1.user.service;
 
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.UserNotFoundException;
+import com.salesianostriana.dam.dyscotkeov1.files.service.StorageService;
+import com.salesianostriana.dam.dyscotkeov1.files.utils.MediaTypeUrlResource;
 import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.*;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
@@ -48,6 +50,7 @@ public class UserService {
                 .email(createUser.getEmail())
                 .phoneNumber(createUser.getPhoneNumber())
                 .fullName(createUser.getFullName())
+                .imgPath("angular.jpg")
                 .roles(roles)
                 .createdAt(createUser.getCreatedAt())
                 .build();
