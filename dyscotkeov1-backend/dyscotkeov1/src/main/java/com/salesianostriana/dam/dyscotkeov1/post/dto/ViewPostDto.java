@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.salesianostriana.dam.dyscotkeov1.comment.dto.GetCommentDto;
 import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
+import com.salesianostriana.dam.dyscotkeov1.user.dto.UserWhoLikeDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class ViewPostDto {
     private String content;
     private String imgPath;
     private String userWhoPost;
-    private List<String> usersWhoLiked;
+    private List<UserWhoLikeDto> usersWhoLiked;
     private List<GetCommentDto> comments;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
@@ -37,7 +38,7 @@ public class ViewPostDto {
                 .content(post.getContent())
                 .imgPath(post.getImgPath())
                 .userWhoPost(post.getUserWhoPost().getUsername())
-                .usersWhoLiked(post.getUsersWhoLiked().stream().map(User::getUsername).toList())
+                .usersWhoLiked(post.getUsersWhoLiked().stream().map(UserWhoLikeDto::of).toList())
                 .comments(post.getComments().stream().map(GetCommentDto::of).toList())
                 .postDate(post.getPostDate())
                 .build();

@@ -36,16 +36,16 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ViewPostDto edit(@Valid @RequestBody NewCommentDto newCommentDto, @PathVariable Long id){
+    public ViewPostDto edit(@Valid @RequestBody NewCommentDto newCommentDto, @PathVariable Long id, @AuthenticationPrincipal User user){
 
-        Post post = commentService.edit(newCommentDto, id);
+        Post post = commentService.edit(newCommentDto, id, user);
 
         return ViewPostDto.of(post);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id){
-        return commentService.delete(id);
+    public ResponseEntity<?> delete(@PathVariable Long id, @AuthenticationPrincipal User user){
+        return commentService.delete(id, user);
     }
 
 }

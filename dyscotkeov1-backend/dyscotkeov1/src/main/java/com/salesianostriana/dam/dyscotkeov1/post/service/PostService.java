@@ -1,7 +1,12 @@
 package com.salesianostriana.dam.dyscotkeov1.post.service;
 
+import com.salesianostriana.dam.dyscotkeov1.error.GlobalRestControllerAdvice;
+import com.salesianostriana.dam.dyscotkeov1.error.model.ApiError;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.PostAccessDeniedExeption;
+import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.PostBadRequestToDeleteException;
 import com.salesianostriana.dam.dyscotkeov1.exception.empty.EmptyPostListException;
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.PostNotFoundException;
+import com.salesianostriana.dam.dyscotkeov1.exception.token.JwtAccessDeniedHandler;
 import com.salesianostriana.dam.dyscotkeov1.page.dto.GetPageDto;
 import com.salesianostriana.dam.dyscotkeov1.post.dto.GetPostDto;
 import com.salesianostriana.dam.dyscotkeov1.post.dto.NewPostDto;
@@ -15,10 +20,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -58,56 +69,45 @@ public class PostService {
     }
 
     public Post findById(Long id) {
-        Optional<Post> post = postRepository.findById(id);
-
-        if (post.isEmpty())
-            throw new PostNotFoundException(id);
-
-        return post.get();
+        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public Optional<Post> findByIdToDelete(Long id){
-        return postRepository.findById(id);
-    }
+    public Post edit(Long id, NewPostDto newPostDto, User user) {
 
-    public Post edit(Long id, NewPostDto newPostDto) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
+        if (post.getUserWhoPost().getId() != user.getId()){
+            throw new PostAccessDeniedExeption();
+        }
         return postRepository.findById(id)
                 .map(old -> {
                     old.setAffair(newPostDto.getAffair());
                     old.setContent(newPostDto.getContent());
                     old.setImgPath(newPostDto.getImgPath());
                     return postRepository.save(old);
-                }).orElseThrow(() -> new  PostNotFoundException(id));
+                }).orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public void deleteById(Post post) {
-        User user = post.getUserWhoPost();
-        post.removeUser(user);
-        userRepository.save(user);
-        post.setUserWhoPost(null);
+    public ResponseEntity<?> deleteById(Long id, User loggedUser) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostBadRequestToDeleteException(id));
+
+        if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername())){
+            throw new PostAccessDeniedExeption();
+        }
+
         postRepository.delete(post);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    public GetPostDto likeAPost(Long id, User user) {
+    public GetPostDto likeAPost(Long id, User loggedUser) {
 
-        Optional<Post> post = postRepository.findById(id);
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (post.isEmpty()){
-            throw new PostNotFoundException(id);
-        }
+        post.like(loggedUser, postRepository.existsLikeByUser(post.getId(), loggedUser.getId()));
 
-        post.get().like(user, postRepository.existsLikeByUser(post.get().getId(), user.getId()));
+        postRepository.save(post);
+        userRepository.save(loggedUser);
 
-        postRepository.save(post.get());
-        userRepository.save(user);
-
-        GetPostDto dto = GetPostDto.of(post.get());
-        if (postRepository.existsLikeByUser(post.get().getId(), user.getId())){
-            dto.setUsersWhoLiked(dto.getUsersWhoLiked()+1);
-        }else {
-            dto.setUsersWhoLiked(dto.getUsersWhoLiked()-1);
-        }
-        return dto;
+        return GetPostDto.of(post);
     }
 }

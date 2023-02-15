@@ -3,6 +3,10 @@ package com.salesianostriana.dam.dyscotkeov1.error;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.salesianostriana.dam.dyscotkeov1.error.model.impl.ApiErrorImpl;
 import com.salesianostriana.dam.dyscotkeov1.error.model.impl.ApiValidationSubError;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.CommentDeniedAccessException;
+import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.PostAccessDeniedExeption;
+import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.CommentBadRequestToDeleteException;
+import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.PostBadRequestToDeleteException;
 import com.salesianostriana.dam.dyscotkeov1.exception.token.JwtTokenException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +49,26 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler({EntityNotFoundException.class})
     public ResponseEntity<?> handleNotFoundException(EntityNotFoundException exception, WebRequest request) {
         return buildApiError(exception.getMessage(), request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({PostAccessDeniedExeption.class})
+    public ResponseEntity<?> handleForbiddenException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler({CommentDeniedAccessException.class})
+    public ResponseEntity<?> handleForbiddenCommentException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler({PostBadRequestToDeleteException.class})
+    public ResponseEntity<?> handleBadRequestException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({CommentBadRequestToDeleteException.class})
+    public ResponseEntity<?> handleBadRequestCommentException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -110,58 +134,25 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({ AuthenticationException.class })
-    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .header("WWW-Authenticate", "Bearer")
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI()));
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
+        return buildApiError(ex.getMessage(), request, HttpStatus.UNAUTHORIZED);
 
     }
 
     @ExceptionHandler({ AccessDeniedException.class })
-    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI()));
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
 
     }
 
-
     @ExceptionHandler({JwtTokenException.class})
-    public ResponseEntity<?> handleTokenException(JwtTokenException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI()));
+    public ResponseEntity<?> handleTokenException(JwtTokenException ex, WebRequest request) {
+        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler({UsernameNotFoundException.class})
-    public ResponseEntity<?> handleUserNotExistsException(UsernameNotFoundException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(GlobalRestControllerAdvice.ErrorMessage.of(
-                        HttpStatus.UNAUTHORIZED,
-                        ex.getMessage(),
-                        request.getRequestURI()
-                ));
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @Builder
-    public static class ErrorMessage {
-
-        private HttpStatus status;
-        private String message, path;
-
-        @Builder.Default
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm:ss")
-        private LocalDateTime dateTime = LocalDateTime.now();
-
-        public static GlobalRestControllerAdvice.ErrorMessage of (HttpStatus status, String message, String path) {
-            return GlobalRestControllerAdvice.ErrorMessage.builder()
-                    .status(status)
-                    .message(message)
-                    .path(path)
-                    .build();
-        }
-
+    public ResponseEntity<?> handleUserNotExistsException(UsernameNotFoundException ex, WebRequest request) {
+        return buildApiError(ex.getMessage(), request, HttpStatus.FORBIDDEN);
     }
 
 }

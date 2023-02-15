@@ -55,6 +55,11 @@ public class UserController {
         return UserProfileDto.of(userService.getProfile(id));
     }
 
+    @GetMapping("userName/{userName}")
+    public UserProfileDto viewUserProfile(@PathVariable String userName){
+        return UserProfileDto.of(userService.getProfileByUserName(userName));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<JwtUserResponse> login(@RequestBody LoginDto loginRequest) {
 

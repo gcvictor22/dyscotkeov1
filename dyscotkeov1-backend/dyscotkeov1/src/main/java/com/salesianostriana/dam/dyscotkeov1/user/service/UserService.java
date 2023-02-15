@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,19 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
 
-    public User createUser(NewUserDto createUser, EnumSet<UserRole> roles) {
+    public GetPageDto<GetUserDto> findAll(List<SearchCriteria> params, Pageable pageable){
+        if (userRepository.findAll().isEmpty())
+            throw new EmptyUserListException();
+
+        USBuilder usBuilder = new USBuilder(params);
+
+        Specification<User> spec = usBuilder.build();
+        Page<GetUserDto> pageGetClientDto = userRepository.findAll(spec, pageable).map(GetUserDto::of);
+
+        return new GetPageDto<>(pageGetClientDto);
+    }
+
+    public User save(NewUserDto createUser, EnumSet<UserRole> roles) {
         User user =  User.builder()
                 .userName(createUser.getUsername())
                 .password(passwordEncoder.encode(createUser.getPassword()))
@@ -44,40 +55,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public GetPageDto<GetUserDto> findAll(List<SearchCriteria> params, Pageable pageable){
-        if (userRepository.findAll().isEmpty())
-            throw new EmptyUserListException();
-
-        USBuilder usBuilder = new USBuilder(params);
-
-        Specification<User> spec = usBuilder.build();
-        Page<GetUserDto> pageGetClientDto = userRepository.findAll(spec, pageable).map(GetUserDto::of);
-
-        return new GetPageDto<>(pageGetClientDto);
-    }
-
-    public boolean existsByUserName(String s) {
-        return userRepository.existsByUserName(s);
-    }
-
-    public boolean existsByEmail(String e) {
-        return userRepository.existsByUserName(e);
-    }
-
-    public boolean existsByPhoneNumber(String p) {
-        return userRepository.existsByUserName(p);
-    }
-
-    public Optional<User> findById(UUID userId) {
-        return userRepository.findById(userId);
-    }
-
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findDistinctByUserName(username);
-    }
-
     public User createUser(NewUserDto createUserRequest) {
-        return createUser(createUserRequest, EnumSet.of(UserRole.USER));
+        return save(createUserRequest, EnumSet.of(UserRole.USER));
     }
 
     public User changePassword(User loggedUser, String changePasswordDto) {
@@ -105,17 +84,18 @@ public class UserService {
     }
 
     public User follow(User loggedUser, String userToFollow) {
-        Optional<User> user = userRepository.findDistinctByUserName(userToFollow);
+        User user = userRepository.findDistinctByUserName(userToFollow).orElseThrow(() -> new UserNotFoundException(userToFollow));
 
-        if (user.isEmpty())
-            throw new UserNotFoundException(userToFollow);
-
-        user.get().giveAFollow(loggedUser, userRepository.checkFollow(loggedUser.getId(), user.get().getId()));
+        user.giveAFollow(loggedUser, userRepository.checkFollow(loggedUser.getId(), user.getId()));
 
         userRepository.save(loggedUser);
-        userRepository.save(user.get());
+        userRepository.save(user);
 
-        return user.get();
+        return user;
+    }
+
+    public User findByUserName(String userName){
+        return userRepository.findDistinctByUserName(userName).orElseThrow(() -> new UserNotFoundException(userName));
     }
 
     public void deleteById(UUID id) {
@@ -124,13 +104,31 @@ public class UserService {
 
     @Transactional
     public User getProfile(UUID id) {
-        Optional<User> user = userRepository.userWithPostsById(id);
+        User user = userRepository.userWithPostsById(id).orElseThrow(() -> new UserNotFoundException(id));
+        postRepository.postComments();
+        return user;
+    }
 
-        if (user.isPresent())
-            postRepository.postComments();
-        else
-            throw new UserNotFoundException(id);
+    @Transactional
+    public User getProfileByUserName(String userName){
+        User user = userRepository.findDistinctByUserName(userName).orElseThrow(() -> new UserNotFoundException(userName));
+        postRepository.postComments();
+        return user;
+    }
 
-        return user.get();
+    public boolean existsByUserName(String s) {
+        return userRepository.existsByUserName(s);
+    }
+
+    public boolean existsByEmail(String e) {
+        return userRepository.existsByUserName(e);
+    }
+
+    public boolean existsByPhoneNumber(String p) {
+        return userRepository.existsByUserName(p);
+    }
+
+    public Optional<User> findById(UUID userId) {
+        return userRepository.findById(userId);
     }
 }

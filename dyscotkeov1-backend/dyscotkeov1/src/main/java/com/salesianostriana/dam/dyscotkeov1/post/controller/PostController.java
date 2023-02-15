@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/post")
@@ -60,22 +59,15 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ViewPostDto editPost(@PathVariable Long id, @RequestBody NewPostDto newPostDto){
-        Post post = postService.edit(id, newPostDto);
+    public ViewPostDto editPost(@PathVariable Long id, @RequestBody NewPostDto newPostDto, @AuthenticationPrincipal User user){
+        Post post = postService.edit(id, newPostDto, user);
 
         return ViewPostDto.of(post);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Long id, @AuthenticationPrincipal User user){
-        Optional<Post> post = postService.findByIdToDelete(id);
-
-        if (post.isPresent()){
-            postService.deleteById(post.get());
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-
-        throw new EntityNotFoundException();
+    public ResponseEntity<?> deletePost(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        return postService.deleteById(id, user);
     }
 
     @PostMapping("/like/{id}")

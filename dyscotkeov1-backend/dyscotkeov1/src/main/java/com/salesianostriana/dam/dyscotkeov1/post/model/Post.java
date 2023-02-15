@@ -35,7 +35,7 @@ public class Post implements Serializable{
     @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
     private List<User> usersWhoLiked;
 
-    @OneToMany(mappedBy = "commentedPost")
+    @OneToMany(mappedBy = "commentedPost", orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
@@ -51,9 +51,15 @@ public class Post implements Serializable{
         aux.add(this);
     }
 
-    public void removeUser(User user){
-        List<Post> aux = user.getPublishedPosts();
-        aux.remove(this);
+    @PreRemove
+    public void preRemove(){
+        if (this.userWhoPost != null)
+            this.userWhoPost.getPublishedPosts().remove(this);
+        this.getUsersWhoLiked().forEach(u -> {
+            u.getLikedPosts().remove(this);
+        });
+
+        this.getUsersWhoLiked().clear();
     }
 
     public void like(User user, boolean b){
@@ -67,6 +73,8 @@ public class Post implements Serializable{
             aux1.remove(user.getLikedPosts().indexOf(this)+1);
             aux2.remove(this.getUsersWhoLiked().indexOf(user)+1);
         }
+        this.setUsersWhoLiked(aux2);
+        user.setLikedPosts(aux1);
     }
 
 }

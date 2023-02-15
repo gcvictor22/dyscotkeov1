@@ -26,14 +26,8 @@ import java.util.stream.Collectors;
 @NamedEntityGraph
         (name="user-with-posts",
                 attributeNodes = {
-                        @NamedAttributeNode(value = "publishedPosts",
-                                subgraph = "posts-with-comments")
-                }, subgraphs = {
-                @NamedSubgraph(name="posts-with-comments",
-                        attributeNodes = {
-                                @NamedAttributeNode(value = "comments")
-                        })
-        })
+                        @NamedAttributeNode(value = "publishedPosts")
+                })
 public class User implements UserDetails {
 
     @Id
@@ -73,7 +67,7 @@ public class User implements UserDetails {
     private List<User> follows = new ArrayList<>();
 
     @OneToMany(mappedBy = "userWhoPost", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @OrderColumn
+    @Builder.Default
     private List<Post> publishedPosts = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -83,6 +77,7 @@ public class User implements UserDetails {
                     foreignKey = @ForeignKey(name="FK_LIKEDPOSTS_POSTS")),
             name = "likedposts"
     )
+    @Builder.Default
     private List<Post> likedPosts = new ArrayList<>();
 
     private boolean verified;
@@ -157,8 +152,32 @@ public class User implements UserDetails {
         }else {
             aux1.add(loggedUser);
             aux2.add(this);
+            if (aux1.size()>=1){
+                this.setRoles(EnumSet.of(UserRole.USER, UserRole.VERIFIED));
+                this.setVerified(true);
+            }
         }
         this.setFollowers(aux1);
         loggedUser.setFollows(aux2);
+    }
+
+    @PreRemove
+    public void preRevome(){
+        this.followers.forEach(f -> {
+            f.follows.remove(this);
+        });
+        this.follows.forEach(f -> {
+            f.followers.remove(this);
+        });
+        this.likedPosts.forEach(p -> {
+            p.getUsersWhoLiked().remove(this);
+        });
+        this.publishedPosts.forEach(p -> {
+            p.setUserWhoPost(null);
+            p.getComments().forEach(c -> {
+                c.setUserWhoComment(null);
+            });
+            p.getComments().clear();
+        });
     }
 }
