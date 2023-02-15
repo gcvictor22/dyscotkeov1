@@ -152,7 +152,8 @@ public class User implements UserDetails {
         }else {
             aux1.add(loggedUser);
             aux2.add(this);
-            if (aux1.size()>=10){
+            if (aux1.size()>=1){
+                this.setRoles(EnumSet.of(UserRole.USER, UserRole.VERIFIED));
                 this.setVerified(true);
             }
         }
