@@ -36,7 +36,4 @@ public class EditProfileDto {
     @OnlyNumber
     private String phoneNumber;
 
-    @URL(message = "{newUserDto.imgPath.url}")
-    private String imgPath;
-
 }
