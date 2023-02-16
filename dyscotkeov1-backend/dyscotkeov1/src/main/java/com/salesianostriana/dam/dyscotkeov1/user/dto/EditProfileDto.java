@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.user.dto;
 
+import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.OnlyNumber;
 import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.UniqueEmail;
 import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.UniquePhoneNumber;
 import com.salesianostriana.dam.dyscotkeov1.validation.annotation.user.UniqueUserName;
@@ -32,6 +33,7 @@ public class EditProfileDto {
 
     @NotEmpty(message = "{newUserDto.phone.notEmpty}")
     @UniquePhoneNumber(message = "{newUserDto.phone.unique}")
+    @OnlyNumber
     private String phoneNumber;
 
     @URL(message = "{newUserDto.imgPath.url}")

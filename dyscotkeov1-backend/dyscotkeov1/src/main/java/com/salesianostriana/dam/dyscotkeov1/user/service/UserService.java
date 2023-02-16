@@ -1,6 +1,7 @@
 package com.salesianostriana.dam.dyscotkeov1.user.service;
 
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.UserNotFoundException;
+import com.salesianostriana.dam.dyscotkeov1.exception.password.EqualOldNewPasswordException;
 import com.salesianostriana.dam.dyscotkeov1.files.service.StorageService;
 import com.salesianostriana.dam.dyscotkeov1.files.utils.MediaTypeUrlResource;
 import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
@@ -50,7 +51,6 @@ public class UserService {
                 .email(createUser.getEmail())
                 .phoneNumber(createUser.getPhoneNumber())
                 .fullName(createUser.getFullName())
-                .imgPath("angular.jpg")
                 .roles(roles)
                 .createdAt(createUser.getCreatedAt())
                 .build();
@@ -62,12 +62,15 @@ public class UserService {
         return save(createUserRequest, EnumSet.of(UserRole.USER));
     }
 
-    public User changePassword(User loggedUser, String changePasswordDto) {
+    public User changePassword(User loggedUser, EditPasswordDto changePasswordDto) {
+
+        if (!Objects.equals(loggedUser.getPassword(), changePasswordDto.getOldPassword()))
+            throw new EqualOldNewPasswordException();
 
         return userRepository.findById(loggedUser.getId())
                 .map(old -> {
                     old.setLastPasswordChangeAt(LocalDateTime.now());
-                    old.setPassword(changePasswordDto);
+                    old.setPassword(changePasswordDto.getNewPassword());
                     return userRepository.save(old);
                 })
                 .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));

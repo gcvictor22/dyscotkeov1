@@ -25,7 +25,7 @@ public class GetPostDto {
     private Long id;
     private String affair;
     private String content;
-    private String imgPath;
+    private List<String> imgPath;
     private String userWhoPost;
     private int usersWhoLiked;
     private int comments;

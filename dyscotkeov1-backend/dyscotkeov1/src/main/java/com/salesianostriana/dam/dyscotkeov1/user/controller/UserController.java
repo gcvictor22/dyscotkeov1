@@ -98,7 +98,7 @@ public class UserController {
     public GetUserDto changePassword(@Valid @RequestBody EditPasswordDto editPasswordDto,
                                                        @AuthenticationPrincipal User loggedUser) {
 
-        User updateUser = userService.changePassword(loggedUser, editPasswordDto.getNewPassword());
+        User updateUser = userService.changePassword(loggedUser, editPasswordDto);
 
         return GetUserDto.of(updateUser);
     }

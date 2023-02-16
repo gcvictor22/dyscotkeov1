@@ -7,6 +7,8 @@ import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.CommentDeniedA
 import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.PostAccessDeniedExeption;
 import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.CommentBadRequestToDeleteException;
 import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.PostBadRequestToDeleteException;
+import com.salesianostriana.dam.dyscotkeov1.exception.file.NotAllowedCountFilesException;
+import com.salesianostriana.dam.dyscotkeov1.exception.password.EqualOldNewPasswordException;
 import com.salesianostriana.dam.dyscotkeov1.exception.token.JwtTokenException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,6 +70,16 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({CommentBadRequestToDeleteException.class})
     public ResponseEntity<?> handleBadRequestCommentException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({EqualOldNewPasswordException.class})
+    public ResponseEntity<?> handleBadRequestPasswordException(EntityNotFoundException exception, WebRequest request) {
+        return buildApiError(exception.getMessage(), request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({NotAllowedCountFilesException.class})
+    public ResponseEntity<?> handleLenghtNotAllowedException(EntityNotFoundException exception, WebRequest request) {
         return buildApiError(exception.getMessage(), request, HttpStatus.BAD_REQUEST);
     }
 

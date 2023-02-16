@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.files.service;
 
-import com.salesianostriana.dam.dyscotkeov1.files.exception.StorageException;
+import com.salesianostriana.dam.dyscotkeov1.exception.storage.StorageException;
 import com.salesianostriana.dam.dyscotkeov1.files.utils.MediaTypeUrlResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;

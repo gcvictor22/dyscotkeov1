@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.jdbc.core.SqlReturnType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ViewPostDto {
     private Long id;
     private String affair;
     private String content;
-    private String imgPath;
+    private List<String> imgPath;
     private String userWhoPost;
     private List<UserWhoLikeDto> usersWhoLiked;
     private List<GetCommentDto> comments;

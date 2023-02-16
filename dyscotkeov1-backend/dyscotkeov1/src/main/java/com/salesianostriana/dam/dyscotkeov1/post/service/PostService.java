@@ -55,7 +55,6 @@ public class PostService {
         Post newPost = Post.builder()
                 .affair(newPostDto.getAffair())
                 .content(newPostDto.getContent())
-                .imgPath(newPostDto.getImgPath())
                 .postDate(LocalDateTime.now())
                 .build();
 
@@ -72,18 +71,17 @@ public class PostService {
         return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public Post edit(Long id, NewPostDto newPostDto, User user) {
+    public Post edit(Long id, NewPostDto newPostDto, User loggedUser) {
 
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (post.getUserWhoPost().getId() != user.getId()){
+        if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername())){
             throw new PostAccessDeniedExeption();
         }
         return postRepository.findById(id)
                 .map(old -> {
                     old.setAffair(newPostDto.getAffair());
                     old.setContent(newPostDto.getContent());
-                    old.setImgPath(newPostDto.getImgPath());
                     return postRepository.save(old);
                 }).orElseThrow(() -> new PostNotFoundException(id));
     }

@@ -5,7 +5,7 @@ import javax.persistence.EntityNotFoundException;
 public class PostNotFoundException extends EntityNotFoundException {
 
     public PostNotFoundException(Long id){
-        super(String.format("The post with: "+id+" does not exist"));
+        super(String.format("The post with id: "+id+" does not exist"));
     }
 
 }

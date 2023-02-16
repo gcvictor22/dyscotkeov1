@@ -1,6 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.files.utils;
 
-import com.salesianostriana.dam.dyscotkeov1.files.exception.StorageException;
+import com.salesianostriana.dam.dyscotkeov1.exception.storage.StorageException;
 import org.apache.tika.Tika;
 import org.springframework.core.io.UrlResource;
 

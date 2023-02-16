@@ -42,6 +42,7 @@ public class NewUserDto {
 
     @NotEmpty(message = "{newUserDto.phone.notEmpty}")
     @UniquePhoneNumber(message = "{newUserDto.phone.unique}")
+    @OnlyNumber
     private String phoneNumber;
 
     private LocalDateTime createdAt = LocalDateTime.now();

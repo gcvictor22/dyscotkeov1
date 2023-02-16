@@ -22,7 +22,4 @@ public class NewPostDto {
     @Length(max = 250, message = "{newPostDto.content.max}")
     private String content;
 
-    @URL(message = "{newUserDto.imgPath.url}")
-    private String imgPath;
-
 }

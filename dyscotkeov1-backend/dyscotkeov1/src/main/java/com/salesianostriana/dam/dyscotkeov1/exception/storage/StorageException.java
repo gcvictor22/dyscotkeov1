@@ -1,4 +1,4 @@
-package com.salesianostriana.dam.dyscotkeov1.files.exception;
+package com.salesianostriana.dam.dyscotkeov1.exception.storage;
 
 public class StorageException extends RuntimeException{
 

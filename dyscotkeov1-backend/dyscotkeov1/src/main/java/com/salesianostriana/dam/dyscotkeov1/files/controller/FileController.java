@@ -1,9 +1,11 @@
 package com.salesianostriana.dam.dyscotkeov1.files.controller;
 
+import com.salesianostriana.dam.dyscotkeov1.exception.file.NotAllowedCountFilesException;
 import com.salesianostriana.dam.dyscotkeov1.files.dto.FileResponse;
 import com.salesianostriana.dam.dyscotkeov1.files.service.FIleService;
 import com.salesianostriana.dam.dyscotkeov1.files.service.StorageService;
 import com.salesianostriana.dam.dyscotkeov1.files.utils.MediaTypeUrlResource;
+import com.salesianostriana.dam.dyscotkeov1.post.service.PostService;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -30,17 +31,19 @@ public class FileController {
 
 
 
-    @PostMapping("/upload/posts")
-    public ResponseEntity<?> upload(@RequestPart("files") MultipartFile[] files) {
+    @PostMapping("/upload/post/{id}")
+    public ResponseEntity<?> upload(@PathVariable Long id, @RequestPart("files") MultipartFile[] files, @AuthenticationPrincipal User user) {
 
-        //FileResponse response = uploadFile(file);
+        if (files.length > 4)
+            throw new NotAllowedCountFilesException();
 
         List<FileResponse> result = Arrays.stream(files)
                 .map(fIleService::uploadFile)
                 .toList();
 
+        fIleService.addToPost(id, user, result);
+
         return ResponseEntity
-                //.created(URI.create(response.getUri()))
                 .status(HttpStatus.CREATED)
                 .body(result);
     }

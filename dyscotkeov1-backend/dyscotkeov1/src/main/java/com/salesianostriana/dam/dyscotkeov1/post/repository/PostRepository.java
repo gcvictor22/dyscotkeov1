@@ -1,7 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.post.repository;
 
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
-import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
