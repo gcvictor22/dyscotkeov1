@@ -1,14 +1,18 @@
 package com.salesianostriana.dam.dyscotkeov1.files.service;
 
 import com.salesianostriana.dam.dyscotkeov1.exception.accesdenied.PostAccessDeniedExeption;
+import com.salesianostriana.dam.dyscotkeov1.exception.badrequest.FileInPostBadRequestException;
+import com.salesianostriana.dam.dyscotkeov1.exception.notfound.FileNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.exception.file.NotAllowedCountFilesException;
 import com.salesianostriana.dam.dyscotkeov1.exception.notfound.PostNotFoundException;
 import com.salesianostriana.dam.dyscotkeov1.files.dto.FileResponse;
+import com.salesianostriana.dam.dyscotkeov1.files.utils.MediaTypeUrlResource;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import com.salesianostriana.dam.dyscotkeov1.post.repository.PostRepository;
-import com.salesianostriana.dam.dyscotkeov1.post.service.PostService;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -45,12 +49,26 @@ public class FIleService {
         if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername()))
             throw new PostAccessDeniedExeption();
 
-        if (post.getImgPath().size() == 4)
+        if (post.getImgPath().size()+result.size() > 4)
             throw new NotAllowedCountFilesException();
 
         result.forEach(r -> {
             post.getImgPath().add(r.getName());
         });
         postRepository.save(post);
+    }
+
+    public ResponseEntity<?> deleteImgFromPost(Long idPost, String imgName, User loggedUser) {
+        Post post = postRepository.findById(idPost).orElseThrow(() -> new PostNotFoundException(idPost));
+
+        if (!post.getImgPath().contains(imgName))
+            throw new FileInPostBadRequestException(imgName);
+
+        if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername()))
+            throw new PostAccessDeniedExeption();
+
+        post.getImgPath().remove(imgName);
+        postRepository.save(post);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

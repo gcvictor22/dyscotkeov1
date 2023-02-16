@@ -52,6 +52,9 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<?> upload(@RequestPart("file") MultipartFile file, @AuthenticationPrincipal User user) {
 
+        if (file.isEmpty())
+            throw new NotAllowedCountFilesException();
+
         FileResponse response = fIleService.uploadFile(file);
         userService.setImg(response.getName(), user);
 
@@ -89,6 +92,11 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Content-Type", resource.getType())
                 .body(resource);
+    }
+
+    @DeleteMapping("post/{idPost}/img/{imgName}")
+    public ResponseEntity<?> deleteImgFromPost(@PathVariable Long idPost, @PathVariable String imgName, @AuthenticationPrincipal User user){
+        return fIleService.deleteImgFromPost(idPost, imgName, user);
     }
 
 }

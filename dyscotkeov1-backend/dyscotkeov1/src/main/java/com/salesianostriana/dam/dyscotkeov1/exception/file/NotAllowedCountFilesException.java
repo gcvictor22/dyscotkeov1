@@ -4,6 +4,6 @@ import javax.persistence.EntityNotFoundException;
 
 public class NotAllowedCountFilesException extends EntityNotFoundException {
     public NotAllowedCountFilesException(){
-        super("No se pueden subir más de 4 imágenes a una publicación");
+        super("La cantidad de imágenes subida no es válida");
     }
 }

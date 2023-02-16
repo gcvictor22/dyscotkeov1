@@ -1,5 +1,6 @@
 package com.salesianostriana.dam.dyscotkeov1.files.service;
 
+import com.salesianostriana.dam.dyscotkeov1.exception.file.NotAllowedCountFilesException;
 import com.salesianostriana.dam.dyscotkeov1.exception.storage.StorageException;
 import com.salesianostriana.dam.dyscotkeov1.files.utils.MediaTypeUrlResource;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 @Service
@@ -57,7 +59,7 @@ public class FileSystemStorageService implements StorageService{
         String newFilename = StringUtils.cleanPath(filename);
 
         if (file.length == 0)
-            throw new Exception("The file is empty");
+            throw new NotAllowedCountFilesException();
 
         newFilename = calculateNewFilename(newFilename);
 
