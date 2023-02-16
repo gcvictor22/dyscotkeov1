@@ -84,7 +84,6 @@ public class UserService {
                     old.setUserName(editProfileDto.getUsername());
                     old.setEmail(editProfileDto.getEmail());
                     old.setPhoneNumber(editProfileDto.getPhoneNumber());
-                    old.setImgPath(editProfileDto.getImgPath());
                     return userRepository.save(old);
                 })
                 .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));
