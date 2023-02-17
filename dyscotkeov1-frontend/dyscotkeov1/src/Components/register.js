@@ -1,6 +1,7 @@
 import React, {useState} from "react";
+import { useNavigate } from "react-router-dom";
 
-export const Register = (props) => {
+export const Register = () => {
     const url = "http://localhost:8080/user/register"
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -8,6 +9,8 @@ export const Register = (props) => {
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [fullName, setFullName] = useState('');
+    const navigate = useNavigate();
+
     
     const hadleSubmit = (e) => {
       e.preventDefault();
@@ -23,7 +26,7 @@ export const Register = (props) => {
         <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" name="" id="" /><br /><br />
         <input type="submit" value="Log in" />
       </form><br />
-      <button onClick={() => props.onFormSwitch('login')}>Registrarme</button>
+      <button onClick={() => navigate('/')}>Registrarme</button>
     </div>
   );
 }
