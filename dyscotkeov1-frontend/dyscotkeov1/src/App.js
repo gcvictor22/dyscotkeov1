@@ -4,7 +4,6 @@ import Login from './Components/login';
 import Register from './Components/register';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Profile from './Components/profile';
-const cors = require('cors');
 
 function App() {
 
