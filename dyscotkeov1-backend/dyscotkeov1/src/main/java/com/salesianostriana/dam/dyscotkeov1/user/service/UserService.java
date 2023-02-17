@@ -64,13 +64,15 @@ public class UserService {
 
     public User changePassword(User loggedUser, EditPasswordDto changePasswordDto) {
 
-        if (!Objects.equals(loggedUser.getPassword(), changePasswordDto.getOldPassword()))
+        if (! passwordEncoder.matches(changePasswordDto.getOldPassword(), loggedUser.getPassword())){
+            System.out.println(loggedUser.getPassword()+" "+passwordEncoder.encode(changePasswordDto.getOldPassword()));
             throw new EqualOldNewPasswordException();
+        }
 
         return userRepository.findById(loggedUser.getId())
                 .map(old -> {
                     old.setLastPasswordChangeAt(LocalDateTime.now());
-                    old.setPassword(changePasswordDto.getNewPassword());
+                    old.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
                     return userRepository.save(old);
                 })
                 .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));
