@@ -3,20 +3,21 @@ import { useState } from "react";
 
 const url = '/user/profile'
 
-export const Profile = () => {
+const headers = { 
+    'Authorization': 'Bearer '+localStorage.getItem('token'),
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+};
 
-    const headers = { 
-        'Authorization': 'Bearer '+localStorage.getItem('token'),
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-    };
+export const Profile = () => {
 
     const [fullName, setFullName] = useState('');
 
     const apiResponse = () => {
         axios.get(url, {headers : headers}).then((res) => {
-            console.log(res);
             setFullName(res.data['fullName']);
+            const obj = JSON.parse(res.request['responseText']);
+            console.log(obj.fullName);
         }).catch((error) => {
             console.log(error);
         })

@@ -11,7 +11,7 @@ export const Login = () => {
 
     const hadleSubmit = (e) => {
       e.preventDefault();
-      axios.post( url, loginBody).then((res) => {
+      axios.post(url, loginBody).then((res) => {
         Swal.fire({
           icon: 'success',
           title: 'Hola '+res.data['userName'],
