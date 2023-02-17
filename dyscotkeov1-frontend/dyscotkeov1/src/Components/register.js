@@ -18,7 +18,6 @@ export const Register = () => {
 
   const hadleSubmit = (e) => {
     e.preventDefault();
-    console.log(registerBody);
     axios.post(url, registerBody).then((res) => {
       Swal.fire({
         icon: 'success',
@@ -28,7 +27,6 @@ export const Register = () => {
       }).then(() => navigate('/'))
     }).catch((error) => {
       setErrores(error.response.data.subErrors);
-      console.log(errores);
       Swal.fire({
         icon: 'error',
         title: error.response.data.message,
@@ -63,9 +61,16 @@ export const Register = () => {
         <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} type="text" name="" id="regPhoneNumber" /><br /><br />
         <label>Full Name</label><br />
         <input value={fullName} onChange={(e) => setFullName(e.target.value)} type="text" name="" id="regFullName" /><br /><br />
-        <input type="submit" value="Log in" />
+        <input type="submit" value="Continuar" />
       </form><br />
-      <button onClick={() => navigate('/')}>Registrarme</button>
+      <button onClick={() => navigate('/')}>Iniciar sesión</button>
+      <ul>
+        {
+          errores.map(er => {
+            return <li>{er.message}</li>
+          })
+        }
+      </ul>
     </div>
   );
 }
