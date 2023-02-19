@@ -37,7 +37,7 @@ public class ViewPostDto {
                 .id(post.getId())
                 .affair(post.getAffair())
                 .content(post.getContent())
-                .imgPath(post.getImgPath())
+                .imgPath(post.getImgPaths())
                 .userWhoPost(post.getUserWhoPost().getUsername())
                 .usersWhoLiked(post.getUsersWhoLiked().stream().map(UserWhoLikeDto::of).toList())
                 .comments(post.getComments().stream().map(GetCommentDto::of).toList())

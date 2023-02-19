@@ -38,7 +38,7 @@ public class GetPostDto {
                 .id(post.getId())
                 .affair(post.getAffair())
                 .content(post.getContent())
-                .imgPath(post.getImgPath())
+                .imgPath(post.getImgPaths())
                 .userWhoPost(post.getUserWhoPost().getUsername())
                 .usersWhoLiked(post.getUsersWhoLiked() == null ? 0 : post.getUsersWhoLiked().size())
                 .comments(post.getComments() == null ? 0 : post.getComments().size())

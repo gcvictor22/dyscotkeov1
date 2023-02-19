@@ -17,8 +17,10 @@ export const Login = () => {
           title: 'Hola '+res.data['userName'],
           showConfirmButton: false,
           timer: 1500
-        }).then(() => navigate('/profile'))
-        localStorage.setItem('token', res.data['token'])
+        }).then(() => {
+          localStorage.setItem('token', res.data['token'])
+          navigate('/profile');
+        })
       }).catch((error) => {
         Swal.fire({
           icon: 'error',

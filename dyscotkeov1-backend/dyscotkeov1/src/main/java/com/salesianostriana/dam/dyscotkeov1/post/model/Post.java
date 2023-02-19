@@ -27,8 +27,8 @@ public class Post implements Serializable{
     private String affair;
     private String content;
 
-    @ElementCollection
-    private List<String> imgPath;
+    @Convert(converter = ImgPathConverter.class)
+    private List<String> imgPaths;
 
     @ManyToOne
     @JoinColumn(name = "userWhoPost", foreignKey = @ForeignKey(name = "FK_USER_COMMENT"))

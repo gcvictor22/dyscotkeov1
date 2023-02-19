@@ -49,11 +49,11 @@ public class FIleService {
         if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername()))
             throw new PostAccessDeniedExeption();
 
-        if (post.getImgPath().size()+result.size() > 4)
+        if (post.getImgPaths().size()+result.size() > 4)
             throw new NotAllowedCountFilesException();
 
         result.forEach(r -> {
-            post.getImgPath().add(r.getName());
+            post.getImgPaths().add(r.getName());
         });
         postRepository.save(post);
     }
@@ -61,13 +61,13 @@ public class FIleService {
     public ResponseEntity<?> deleteImgFromPost(Long idPost, String imgName, User loggedUser) {
         Post post = postRepository.findById(idPost).orElseThrow(() -> new PostNotFoundException(idPost));
 
-        if (!post.getImgPath().contains(imgName))
+        if (!post.getImgPaths().contains(imgName))
             throw new FileInPostBadRequestException(imgName);
 
         if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername()))
             throw new PostAccessDeniedExeption();
 
-        post.getImgPath().remove(imgName);
+        post.getImgPaths().remove(imgName);
         postRepository.save(post);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

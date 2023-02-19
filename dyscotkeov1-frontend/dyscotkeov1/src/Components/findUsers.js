@@ -1,28 +1,28 @@
-import axios, { } from "axios";
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
-const url = '/user/profile'
 
 const headers = {
     'Authorization': 'Bearer ' + localStorage.getItem('token'),
     'Content-Type': 'application/json',
 };
 
-export const Profile = () => {
+const url = "/user/?page=0"
+var it = 0;
 
-    const [fullName, setFullName] = useState('');
+export const FindUsers = () => {
+
     const navigate = useNavigate();
+    const [responseData, setResponseData] = useState([]);
 
-    const apiResponse = () => {
+    if (it < 1) {
         axios.get(url, { headers: headers }).then((res) => {
-            setFullName(res.data.fullName);
+            setResponseData(res.data.content);
+            it = 1;
         }).catch((er) => {
             console.log(er);
-            if (localStorage.length > 0) {
-                window.location.reload()
-            }else{
+            if (er.response.status === 401 || er.response.status === 500 || er.response.status === 403) {
                 Swal.fire({
                     icon: 'info',
                     title: 'No puedes acceder a esta sección sin iniciar sesión',
@@ -34,7 +34,7 @@ export const Profile = () => {
                 }).then((result) => {
                     if (result.isDenied) {
                         navigate("/register")
-                    }else{
+                    } else {
                         navigate("/")
                     }
                 })
@@ -42,12 +42,17 @@ export const Profile = () => {
         })
     }
 
+
     return (
         <div>
-            {apiResponse()}
-            {fullName}
+            {
+                responseData.map((u) => {
+                    return <button key={u.id} onClick={() => navigate(`/user/${u.userName}`)}>{u.userName}</button>
+                })
+            }
         </div>
-    );
+    )
+
 }
 
-export default Profile;
+export default FindUsers;
