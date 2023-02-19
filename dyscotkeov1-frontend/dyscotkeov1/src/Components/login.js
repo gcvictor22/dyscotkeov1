@@ -19,7 +19,8 @@ export const Login = () => {
           timer: 1500
         }).then(() => {
           localStorage.setItem('token', res.data['token'])
-          navigate('/profile');
+          localStorage.setItem('loggedUser', res.data.userName)
+          navigate(`/user/${username}`);
         })
       }).catch((error) => {
         Swal.fire({
@@ -46,7 +47,7 @@ export const Login = () => {
         <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" name="" id="loginPassword" /><br /><br />
         <input type="submit" value="Log in" />
       </form><br />
-      <button onClick={() => navigate('/register')}>Registrarme</button>
+      <button onClick={() => navigate(`/register`)}>Registrarme</button>
     </div>
   );
 }

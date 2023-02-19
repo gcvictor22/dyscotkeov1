@@ -1,12 +1,24 @@
+import axios from "axios";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+const headers = {
+    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+    'Content-Type': 'application/json',
+};
 
 export const PageNotFound = () => {
 
     const navigate = useNavigate();
+    const [loggedUser, setLoggedUser] = useState('');
+
+    axios.get("/user/profile", {headers : headers})
+    .then((res) => setLoggedUser(res.data.userName))
 
     const navigateTo = () => {
+
         if (localStorage.length > 0) {
-            navigate("/profile");
+            navigate(`/user/${loggedUser}`);
         }else{
             navigate("/");
         }
