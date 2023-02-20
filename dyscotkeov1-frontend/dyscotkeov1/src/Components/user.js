@@ -29,7 +29,7 @@ export const Profile = () => {
             setUser(res.data);
         }).catch((er) => {
             console.log(er);
-            if (er.response.status === 403 && localStorage.getItem('loggedUser') === userName) {
+            if (er.response.status === 401 && localStorage.getItem('loggedUser') === userName) {
                 window.location.reload();
 
             } else if (er.response.status === 404) {
@@ -67,6 +67,13 @@ export const Profile = () => {
         setPostLoading(false);
         // eslint-disable-next-line
     }, [])
+
+    function navigateTo(params) {
+        if (params !== userName) {
+            navigate(`/user/${params}`)
+            window.location.reload()
+        }
+    }
 
     const imgSubmit = (e) => {
         e.preventDefault();
@@ -115,7 +122,7 @@ export const Profile = () => {
                     <p>{user.fullName}</p>
 
                     <ul className="nav nav-tabs enlacesPaginacion">
-                        <li className="active"><a href="#Posts" data-toggle="tab">Posts</a></li>
+                        <li className="active"><a href="#Posts" data-toggle="tab">Todos los posts</a></li>
                         <li><a href="#Product" data-toggle="tab">Product</a></li>
                         <li><a href="#CSS" data-toggle="tab">CSS</a></li>
                         <li><a href="#Javascript" data-toggle="tab">Javascript</a></li>
@@ -135,17 +142,17 @@ export const Profile = () => {
                                 {postLoading === false && postsPage.content !== undefined &&
                                     postsPage.content.map((p) => {
                                         return <div className="post" key={p.id}>
-                                            <div className="userWhoPost">
+                                            <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
                                                 <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt=""/>
                                                 <p>{p.userWhoPost.userName}</p>
-                                            </div>
+                                            </button>
                                             <h3>{p.affair}</h3>
                                             <p>{p.content}</p>
                                             {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
                                                 <div className="imgPostContainer">
                                                     {
                                                         p.imgPath.map((i) => {
-                                                            return <div className="sigleImgPost"><img key={i} src={`http://localhost:8080/file/${i}`} alt="" /></div>
+                                                            return <div className="sigleImgPost" key={i}><img src={`http://localhost:8080/file/${i}`} alt="" /></div>
                                                         })
                                                     }
                                                 </div>

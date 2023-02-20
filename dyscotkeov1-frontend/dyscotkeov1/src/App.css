@@ -642,9 +642,19 @@ a {
   box-sizing: border-box;
   border-radius: 15px;
   box-shadow: 5px 5px 5px rgba(111, 111, 111);
+  text-align: justify;
+}
+
+.post h3{
+  margin-top: 70px;
+}
+
+.post h3, p{
+  margin-left: 7.5px;
 }
 
 .imgPostContainer{
+  margin-top: 20px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -653,9 +663,11 @@ a {
 
 .sigleImgPost{
   flex: 2.5;
+  max-width: min-content;
   overflow: hidden;
   transition: all 1s;
   height: 170px;
+  margin: auto;
 }
 
 .sigleImgPost img{
@@ -677,13 +689,24 @@ a {
 }
 
 .userWhoPost{
+  max-width: max-content;
+  float: left;
+  position: inherit;
   display: flex;
-  position: fixed;
   border-radius: 5px;
   background: #FFFFFF;
   padding: 10px;
   box-sizing: border-box;
   color: black;
+  margin-left: 7.5px;
+  cursor: pointer;
+  border: 0;
+  transition: all 0.5s;
+}
+
+.userWhoPost:hover{
+  transform: scale(1.05);
+  box-shadow: 3px 3px 3px rgb(58, 58, 58);
 }
 
 .userWhoPost img{
