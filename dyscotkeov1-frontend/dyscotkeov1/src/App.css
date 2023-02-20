@@ -554,7 +554,7 @@ a {
 
 .userNameProfile{
   display: flex;
-  margin: 25px auto;
+  margin: 15px auto;
   justify-content: center;
 }
 
@@ -629,14 +629,15 @@ a {
 #divPosts{
   margin: 25px auto;
   width: 700px;
-  height: 470px;
+  height: 500px;
   overflow-y: scroll;
-  color: #FFFFFF
+  color: #FFFFFF;
 }
 
 .post{
   width: 650px;
-  margin: 25px auto;
+  margin: auto;
+  margin-bottom: 25px;
   background: #2590EB;
   padding: 10px;
   box-sizing: border-box;
@@ -717,4 +718,36 @@ a {
 .userWhoPost p{
   margin-left: 10px;
   margin-top: 8px;
+}
+
+.userFullName{
+  margin-bottom: 25px;
+}
+
+#paginadorPosts{
+  position: sticky;
+  top: 0;
+  background: transparent;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  height: 50px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+#atras, #numPagina, #siguiente{
+  background: #2590EB;
+  border: none;
+  color: white;
+  margin: 5px;
+  padding: 5px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid white;
+  font-weight: 600;
+}
+
+#noHayPost{
+  margin-top: 150px;
+  color: black;
 }

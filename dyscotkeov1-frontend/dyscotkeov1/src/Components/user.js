@@ -2,6 +2,10 @@ import axios, { } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+
 
 const headers = {
     'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -21,8 +25,9 @@ export const Profile = () => {
     const [file, setFile] = useState();
     const [fileName, setFileName] = useState('');
     const [postsPage, setPostsPage] = useState([]);
-    const navigate = useNavigate();
     const [postLoading, setPostLoading] = useState(true);
+    const [pageNumber, setPageNumber] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.get(url, { headers: headers }).then((res) => {
@@ -59,14 +64,14 @@ export const Profile = () => {
     }, []);
 
     useEffect(() => {
-        axios.get("/post/?page=0", { headers: headers }).then((res) => {
+        axios.get(`/post/?page=${pageNumber}`, { headers: headers }).then((res) => {
             setPostsPage(res.data);
         }).catch((er) => {
             console.log(er);
         })
         setPostLoading(false);
         // eslint-disable-next-line
-    }, [])
+    }, [pageNumber])
 
     function navigateTo(params) {
         if (params !== userName) {
@@ -117,13 +122,22 @@ export const Profile = () => {
 
                     <div className="userNameProfile">
                         <img src={`http://localhost:8080/file/${user.imgPath}`} className="imgUser" alt="" />
-                        <h1>{user.userName}</h1>
+                        <h1>{user.userName} {user.verified === true &&
+                            <FontAwesomeIcon icon={faCheckCircle} color="#2590EB" />
+                        }</h1>
                     </div>
-                    <p>{user.fullName}</p>
+                    <p className="userFullName">{user.fullName}</p>
 
                     <ul className="nav nav-tabs enlacesPaginacion">
-                        <li className="active"><a href="#Posts" data-toggle="tab">Todos los posts</a></li>
-                        <li><a href="#Product" data-toggle="tab">Product</a></li>
+                        {localStorage.getItem("loggedUser") === userName &&
+                            <li className="active"><a href="#Posts" data-toggle="tab">Todos los posts</a></li>
+                        }
+                        {localStorage.getItem("loggedUser") === userName &&
+                            <li><a href="#Product" data-toggle="tab">Product</a></li>
+                        }
+                        {localStorage.getItem("loggedUser") !== userName &&
+                            <li className="active"><a href="#Product" data-toggle="tab">Product</a></li>
+                        }
                         <li><a href="#CSS" data-toggle="tab">CSS</a></li>
                         <li><a href="#Javascript" data-toggle="tab">Javascript</a></li>
                         <li><a href="#Bootstrap" data-toggle="tab">Bootstrap</a></li>
@@ -135,37 +149,65 @@ export const Profile = () => {
 
 
                     <div className="tab-content">
-                        <div id="Posts" className="tab-pane fade in active">
-                            <h3>Todos los posts</h3>
-                            <div id="divPosts">
-                                <div id="paginadorPosts"></div>
-                                {postLoading === false && postsPage.content !== undefined &&
-                                    postsPage.content.map((p) => {
-                                        return <div className="post" key={p.id}>
-                                            <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
-                                                <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt=""/>
-                                                <p>{p.userWhoPost.userName}</p>
-                                            </button>
-                                            <h3>{p.affair}</h3>
-                                            <p>{p.content}</p>
-                                            {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
-                                                <div className="imgPostContainer">
-                                                    {
-                                                        p.imgPath.map((i) => {
-                                                            return <div className="sigleImgPost" key={i}><img src={`http://localhost:8080/file/${i}`} alt="" /></div>
-                                                        })
-                                                    }
-                                                </div>
-                                            }
+                        {localStorage.getItem("loggedUser") === userName &&
+                            <div id="Posts" className="tab-pane fade in active">
+                                <h3>Todos los posts</h3>
+                                <div id="divPosts">
+                                    {postsPage.content === undefined &&
+                                        <p id="noHayPost">No hay ninguna publicación</p>
+                                    }
+                                    {postLoading === false && postsPage.content !== undefined &&
+                                        <div id="paginadorPosts">
+                                            <div id="paginacion">
+                                                {postsPage.first !== true &&
+                                                    <button id="atras" onClick={() => setPageNumber(pageNumber - 1)}>&#8678;</button>
+                                                }
+                                                {postsPage.totalElements > 20 &&
+                                                    <button id="numPagina">{pageNumber + 1}</button>
+                                                }
+                                                {postsPage.last !== true &&
+                                                    <button id="siguiente" onClick={() => setPageNumber(pageNumber + 1)}>&#8680;</button>
+                                                }
+                                            </div>
                                         </div>
-                                    })
-                                }
+                                    }
+                                    <br />
+                                    {postLoading === false && postsPage.content !== undefined &&
+                                        postsPage.content.map((p) => {
+                                            return <div className="post" key={p.id}>
+                                                <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
+                                                    <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
+                                                    <p>{p.userWhoPost.userName}</p>
+                                                </button>
+                                                <h3>{p.affair}</h3>
+                                                <p>{p.content}</p>
+                                                {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
+                                                    <div className="imgPostContainer">
+                                                        {
+                                                            p.imgPath.map((i) => {
+                                                                return <div className="sigleImgPost" key={i}><img src={`http://localhost:8080/file/${i}`} alt="" /></div>
+                                                            })
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        })
+                                    }
+                                </div>
                             </div>
-                        </div>
-                        <div id="Product" className="tab-pane fade">
-                            <h3>Product</h3>
-                            <p>Advanced extended doubtful he he blessing together. Introduced far law gay considered frequently entreaties difficulty. Eat him four are rich nor calm. By an packages rejoiced exercise. To ought on am marry rooms doubt music. Mention entered an through company as. Up arrived no painful between. It declared is prospect an insisted pleasure. </p>
-                        </div>
+                        }
+                        {localStorage.getItem("loggedUser") === userName &&
+                            <div id="Product" className="tab-pane fade">
+                                <h3>Product</h3>
+                                <p>Advanced extended doubtful he he blessing together. Introduced far law gay considered frequently entreaties difficulty. Eat him four are rich nor calm. By an packages rejoiced exercise. To ought on am marry rooms doubt music. Mention entered an through company as. Up arrived no painful between. It declared is prospect an insisted pleasure. </p>
+                            </div>
+                        }
+                        {localStorage.getItem("loggedUser") !== userName &&
+                            <div id="Product" className="tab-pane fade in active">
+                                <h3>Product</h3>
+                                <p>Advanced extended doubtful he he blessing together. Introduced far law gay considered frequently entreaties difficulty. Eat him four are rich nor calm. By an packages rejoiced exercise. To ought on am marry rooms doubt music. Mention entered an through company as. Up arrived no painful between. It declared is prospect an insisted pleasure. </p>
+                            </div>
+                        }
                         <div id="Editar" className="tab-pane fade">
                             <h3>Modificar foto de perfil</h3>
                             <form onSubmit={imgSubmit}>
