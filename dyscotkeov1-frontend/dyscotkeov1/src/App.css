@@ -602,7 +602,6 @@ a {
 }
 
 #submitSaveImg{
-  margin-top: 25px;
   width: 150px;
   height: 50px;
   background-image: linear-gradient(to bottom, #2590EB 50%, #FFFFFF 50%);
@@ -617,4 +616,82 @@ a {
 #submitSaveImg:hover{
   background-position: 0 -100%;
   color: #2590EB;
+}
+
+#fileName{
+  margin-top: 15px;
+}
+
+.enlacesPaginacion li{
+  width: 100%;
+}
+
+#divPosts{
+  margin: 25px auto;
+  width: 700px;
+  height: 470px;
+  overflow-y: scroll;
+  color: #FFFFFF
+}
+
+.post{
+  width: 650px;
+  margin: 25px auto;
+  background: #2590EB;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 15px;
+  box-shadow: 5px 5px 5px rgba(111, 111, 111);
+}
+
+.imgPostContainer{
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 700px
+}
+
+.sigleImgPost{
+  flex: 2.5;
+  overflow: hidden;
+  transition: all 1s;
+  height: 170px;
+}
+
+.sigleImgPost img{
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: all 1s;
+  margin: 0 5px;
+  height: 100%;
+  border-radius: 10px;
+}
+
+.sigleImgPost:hover{
+  flex: 5;
+  height: 250px;
+}
+
+.sigleImgPost img:hover{
+  filter: none;
+}
+
+.userWhoPost{
+  display: flex;
+  position: fixed;
+  border-radius: 5px;
+  background: #FFFFFF;
+  padding: 10px;
+  box-sizing: border-box;
+  color: black;
+}
+
+.userWhoPost img{
+  width: 35px;
+  border-radius: 50%;
+}
+
+.userWhoPost p{
+  margin-left: 10px;
+  margin-top: 8px;
 }

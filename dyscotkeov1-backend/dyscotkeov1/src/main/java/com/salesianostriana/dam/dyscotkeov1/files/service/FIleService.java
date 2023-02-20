@@ -52,6 +52,8 @@ public class FIleService {
         if (post.getImgPaths().size()+result.size() > 4)
             throw new NotAllowedCountFilesException();
 
+        post.getImgPaths().remove("VACIO");
+
         result.forEach(r -> {
             post.getImgPaths().add(r.getName());
         });
@@ -68,6 +70,10 @@ public class FIleService {
             throw new PostAccessDeniedExeption();
 
         post.getImgPaths().remove(imgName);
+
+        if (post.getImgPaths().isEmpty())
+            post.getImgPaths().add("VACIO");
+
         postRepository.save(post);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
