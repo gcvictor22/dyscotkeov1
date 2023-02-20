@@ -50,6 +50,7 @@ public class UserService {
                 .password(passwordEncoder.encode(createUser.getPassword()))
                 .email(createUser.getEmail())
                 .phoneNumber(createUser.getPhoneNumber())
+                .imgPath("default.png")
                 .fullName(createUser.getFullName())
                 .roles(roles)
                 .createdAt(createUser.getCreatedAt())

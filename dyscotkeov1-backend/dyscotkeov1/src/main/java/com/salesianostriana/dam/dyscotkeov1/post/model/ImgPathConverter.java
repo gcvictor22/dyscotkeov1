@@ -18,7 +18,8 @@ public class ImgPathConverter implements AttributeConverter<List<String>, String
         if (!imgPaths.isEmpty()) {
             return String.join(SEPARADOR, imgPaths);
         }
-        return null;
+
+        return "VACIO";
     }
 
     @Override

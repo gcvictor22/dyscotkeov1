@@ -74,12 +74,16 @@ public class FileController {
     @GetMapping("/profileImg")
     public ResponseEntity<Resource> getProfileImg(@AuthenticationPrincipal User user){
 
-        MediaTypeUrlResource resource =
-                (MediaTypeUrlResource) storageService.loadAsResource(user.getImgPath());
+        if (user.getImgPath() != null){
+            MediaTypeUrlResource resource =
+                    (MediaTypeUrlResource) storageService.loadAsResource(user.getImgPath());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .header("Content-Type", resource.getType())
-                .body(resource);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .header("Content-Type", resource.getType())
+                    .body(resource);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
     @GetMapping("userImg/{userName}")

@@ -545,3 +545,76 @@ a {
     margin-top: 20px;
   }
 }
+
+.imgUser{
+  width: 70px;
+  border-radius: 50%;
+  margin-right: 30px;
+}
+
+.userNameProfile{
+  display: flex;
+  margin: 25px auto;
+  justify-content: center;
+}
+
+.enlacesPaginacion{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wrapper .file-upload {
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #2590EB;
+  overflow: hidden;
+  background-image: linear-gradient(to bottom, #2590EB 50%, #FFFFFF 50%);
+  background-size: 100% 200%;
+  transition: all 1s;
+  color: #FFFFFF;
+  font-size: 100px;
+}
+.wrapper .file-upload input[type=file] {
+  height: 150px;
+  width: 150px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.wrapper .file-upload:hover {
+  background-position: 0 -100%;
+  color: #2590EB;
+}
+
+#submitSaveImg{
+  margin-top: 25px;
+  width: 150px;
+  height: 50px;
+  background-image: linear-gradient(to bottom, #2590EB 50%, #FFFFFF 50%);
+  background-size: 100% 200%;
+  border: 2px solid #2590EB;
+  color: #FFFFFF;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 1s;
+}
+
+#submitSaveImg:hover{
+  background-position: 0 -100%;
+  color: #2590EB;
+}

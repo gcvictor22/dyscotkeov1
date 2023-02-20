@@ -2,7 +2,8 @@ import React, {useState} from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-const url = "http://localhost:8080/user/login"
+
+const url = "http://localhost:8080/user/login";
 
 export const Login = () => {
     const [username, setUsername] = useState('');

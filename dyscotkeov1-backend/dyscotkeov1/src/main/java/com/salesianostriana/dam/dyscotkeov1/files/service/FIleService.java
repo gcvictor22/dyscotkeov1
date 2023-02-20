@@ -31,7 +31,7 @@ public class FIleService {
         String name = storageService.store(file);
 
         String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
+                .path("/file/")
                 .path(name)
                 .toUriString();
 

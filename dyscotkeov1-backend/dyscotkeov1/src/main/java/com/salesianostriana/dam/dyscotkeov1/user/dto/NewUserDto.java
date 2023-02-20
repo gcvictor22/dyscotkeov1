@@ -35,6 +35,8 @@ public class NewUserDto {
     @NotEmpty(message = "{newUserDto.verifypassword.notempty}")
     private String verifyPassword;
 
+    private String imgPath;
+
     @NotEmpty(message = "{newUserDto.email.notempty}")
     @Email(message = "{newUserDto.email.email}")
     @UniqueEmail(message = "{newUserDto.email.unique}")
