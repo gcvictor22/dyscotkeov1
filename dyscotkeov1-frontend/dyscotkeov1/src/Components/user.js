@@ -20,13 +20,15 @@ export const Profile = () => {
     //var loggedUser = localStorage.getItem('loggedUser');
 
     const [user, setUser] = useState(null);
-    const [img, setImg] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [file, setFile] = useState();
+    const [files, setFiles] = useState([]);
     const [fileName, setFileName] = useState('');
     const [postsPage, setPostsPage] = useState([]);
     const [postLoading, setPostLoading] = useState(true);
     const [pageNumber, setPageNumber] = useState(0);
+    const [affair, setAffair] = useState('');
+    const [content, setContent] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,7 +36,7 @@ export const Profile = () => {
             setUser(res.data);
         }).catch((er) => {
             console.log(er);
-            if (er.response.status === 401 && localStorage.getItem('loggedUser') === userName) {
+            if (er.response.status === 403) {
                 window.location.reload();
 
             } else if (er.response.status === 404) {
@@ -63,6 +65,70 @@ export const Profile = () => {
         // eslint-disable-next-line
     }, []);
 
+    const createPost = (e) => {
+        e.preventDefault();
+        axios.post("/post/", postBody, { headers: headers }).then((res) => {
+            if (res.status === 201) {
+                if (files.length > 1) {
+                    imgsPostSubmit(e, res.data.id);
+                }else{
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡El post se ha publicado con éxito!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    })
+                }
+            }
+        }).catch((er) => {
+            console.log(er);
+            Swal.fire({
+                icon: 'error',
+                title: er.response.data.subErrors[0].message,
+                showConfirmButton: false,
+                timer: 1500
+            })
+        })
+
+    }
+
+    const imgsPostSubmit = (e, postId) => {
+        e.preventDefault();
+        headers["Content-Type"] = "multipart/form-data"
+        let formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append("files", files[i])   
+        }
+
+        axios.post(`/file/upload/post/${postId}`, formData, { headers: headers, }).then((res) => {
+            if (res.status === 201) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡El post se ha publicado con éxito!',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.reload();
+                })
+            }
+        }).catch((er) => {
+            console.log(er, files);
+            Swal.fire({
+                icon: 'error',
+                title: er.response['data']['message'],
+                showConfirmButton: false,
+                timer: 1500
+            })
+        })
+    }
+
+    const postBody = {
+        affair: affair,
+        content: content
+    }
+
     useEffect(() => {
         axios.get(`/post/?page=${pageNumber}`, { headers: headers }).then((res) => {
             setPostsPage(res.data);
@@ -87,8 +153,6 @@ export const Profile = () => {
         formData.append("file", file);
 
         axios.post("/file/upload", formData, { headers: headers, }).then((res) => {
-            setImg(res.data.uri);
-            console.log(img);
             if (res.status === 201) {
                 Swal.fire({
                     icon: 'success',
@@ -109,6 +173,27 @@ export const Profile = () => {
         })
     }
 
+    const logOut = () => {
+        localStorage.clear();
+        navigate("/")
+    }
+
+    const [boolPostForm, setBoolPostForm] = useState(false);
+    var postForm = document.getElementById("postForm");
+    var backgroundPostForm = document.getElementById("backgroundFormPost")
+
+    function mostrarPostForm() {
+        if (boolPostForm) {
+            postForm.style.top = "-1000px"
+            backgroundPostForm.style.visibility = "hidden"
+            setBoolPostForm(false);
+        } else {
+            postForm.style.top = "25%"
+            backgroundPostForm.style.visibility = "visible"
+            setBoolPostForm(true);
+        }
+    }
+
     if (isLoading) {
         return (
             <div>
@@ -118,6 +203,23 @@ export const Profile = () => {
     } else if (user !== null) {
         return (
             <div>
+                <button id="backgroundFormPost" onClick={() => mostrarPostForm()}>
+                </button>
+                <div id="postForm">
+                    <form onSubmit={createPost}>
+                        <input type="text" onChange={(e) => setAffair(e.target.value)}></input>
+                        <textarea onChange={(e) => setContent(e.target.value)}></textarea>
+                        <input type="file" multiple onChange={(e) =>{ 
+                            setFiles(e.target.files);
+                        }}></input>
+                        <input type="submit" value="Postear"></input>
+                    </form>
+                </div>
+                <nav id="navBar">
+                    <button id="logOutButton" onClick={() => logOut()}>Log out</button>
+                    <button id="miPerfilButton">Mi perfil</button>
+                    <button id="postearButton" onClick={() => mostrarPostForm()}>Postear</button>
+                </nav>
                 <div className="container">
 
                     <div className="userNameProfile">

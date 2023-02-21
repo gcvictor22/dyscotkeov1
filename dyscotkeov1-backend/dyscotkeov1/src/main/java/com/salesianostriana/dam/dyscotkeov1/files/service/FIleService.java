@@ -49,10 +49,12 @@ public class FIleService {
         if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername()))
             throw new PostAccessDeniedExeption();
 
-        if (post.getImgPaths().size()+result.size() > 4)
-            throw new NotAllowedCountFilesException();
-
         post.getImgPaths().remove("VACIO");
+
+        if (post.getImgPaths().size()+result.size() > 4){
+            post.getImgPaths().add("VACIO");
+            throw new NotAllowedCountFilesException();
+        }
 
         result.forEach(r -> {
             post.getImgPaths().add(r.getName());
