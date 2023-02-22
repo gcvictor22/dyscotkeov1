@@ -108,7 +108,7 @@ public class PostService {
         userRepository.save(loggedUser);
 
         GetPostDto dto = GetPostDto.of(post);
-        if (Objects.equals(dto.getUserWhoPost(), loggedUser.getUsername())){
+        if (Objects.equals(dto.getUserWhoPost().getUserName(), loggedUser.getUsername())){
             if (b){
                 dto.setUsersWhoLiked(dto.getUsersWhoLiked()-1);
             }else {

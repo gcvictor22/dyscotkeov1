@@ -69,6 +69,12 @@ a {
   color: #000;
 }
 
+.container{
+  width: 80%;
+  background: white;
+  height: 100vh;
+  z-index: 1;
+}
 
 .top-header:before {
     background-image: url(https://1.bp.blogspot.com/-gxsOcYWghHA/Xp_izTh4sFI/AAAAAAAAU8s/y637Fwg99qAuzW9na_NT_uApny8Vce95gCEwYBhgL/s1600/header-footer-gradient-bg.png);
@@ -627,14 +633,12 @@ a {
 }
 
 #divPosts{
-  margin: 25px auto;
+  margin: 15px auto;
   width: 700px;
-  height: 500px;
+  height: 450px;
   overflow-y: scroll;
   color: #FFFFFF;
 }
-
-/* Estilos para motores Webkit y blink (Chrome, Safari, Opera... )*/
 
 #divPosts::-webkit-scrollbar {
   -webkit-appearance: none;
@@ -672,6 +676,7 @@ a {
   border-radius: 15px;
   box-shadow: 5px 5px 5px rgba(111, 111, 111);
   text-align: justify;
+  position: relative;
 }
 
 .post h3{
@@ -761,6 +766,7 @@ a {
   height: 50px;
   padding: 5px;
   box-sizing: border-box;
+  z-index: 10;
 }
 
 #atras, #numPagina, #siguiente{
@@ -787,6 +793,8 @@ a {
   display: flex;
   flex-direction: row-reverse;
   padding: 10px;
+  position: relative;
+  z-index: 2;
 }
 
 #navBar button{
@@ -797,6 +805,7 @@ a {
   border: 0;
   font-weight: 600  ;
   z-index: 2;
+  min-width: max-content;
 }
 
 #navBar button:hover{
@@ -816,7 +825,7 @@ a {
 
 #postForm{
   position: absolute;
-  left: 38%;
+  left: 36.7%;
   width: 400px;
   height: 400px;
   background: white;
@@ -825,6 +834,46 @@ a {
   top: -1000px;
   border: 2px solid #2590EB;
   border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+#postForm input{
+  width: 100%;
+}
+
+#postForm textarea{
+  width: 100%;
+  height: 100px;
+  resize: none;
+  padding: 5px 10px;
+  background: rgb(227, 227, 227);
+  border-radius: 5px;
+  border: 0;
+  transition: all 0.3s;
+}
+
+#postForm textarea:focus{
+  background: transparent;
+  border: 1px solid #2590EB;
+}
+
+#postForm input[type="text"]{
+  border: 0;
+  height: 30px;
+  background: rgb(227, 227, 227);
+  font-size: 20px;
+  padding: 0 10px;
+  border-radius: 5px;
+  transition: all 0.3s;
+  margin-bottom: 20px;
+}
+
+#postForm input[type="text"]:focus{
+  background: transparent;
+  border: 1px solid #2590EB;
 }
 
 #backgroundFormPost{
@@ -839,4 +888,135 @@ a {
   visibility: hidden;
   border: 0;
   cursor: default;
+}
+
+#fullBackground{
+  background-image: url("https://www.atlantico.net/media/atlantico/images/2023/01/29/2023012920145285018.jpg");
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.verificadoUser{
+  margin-left: 6px;
+  margin-top: 11px;
+}
+
+.porcentaje{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+#porcentajeBG{
+  width: 70px;
+  background: rgb(227, 227, 227);
+  border-radius: 5px;
+  height: 5px;
+  margin-left: 10px;
+  margin-top: 7px;
+}
+
+#porcentajaProg{
+  height: 100%;
+  background: #2590EB;
+  border-radius: 5px;
+  width: 0;
+}
+
+#goBack{
+  position: fixed;
+  left: 20px;
+}
+
+.files-upload {
+  position: relative;
+}
+
+.inputfile {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+#postForm label {
+  width: 100%;
+  display: inline-block;
+  background-color: #2590EB;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 400;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+#postForm label:hover {
+  background-color: #04569e;
+}
+
+#postForm input[type="file"]:focus + label {
+  outline: 1px dotted #000;
+  outline: -webkit-focus-ring-color auto 5px;
+}
+
+#postForm input[type="file"]:invalid + label {
+  color: #999;
+}
+
+#postForm input[type="file"]:valid + label {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  color: #fff;
+  border: 2px solid #2590EB;
+}
+
+/* Icono de subida */
+#postForm label i {
+  margin-right: 8px;
+}
+
+/* Estilos adicionales según el tamaño de pantalla */
+@media screen and (max-width: 480px) {
+  #postForm label {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+  #postForm label i {
+    margin-right: 6px;
+  }
+}
+
+.likePostButton{
+  position: absolute;
+  right: 3%;
+}
+
+#editForm{
+  width: 80%;
+  display: flex;
+  justify-content: space-around;
+  margin: auto;
+}
+
+#editForm input[type="text"]{
+  border: 0;
+  height: 30px;
+  background: rgb(227, 227, 227);
+  font-size: 20px;
+  padding: 0 10px;
+  border-radius: 5px;
+  transition: all 0.3s;
+  margin: 0 10px 20px 10px;
+}
+
+#editForm input[type="text"]:focus{
+  background: transparent;
+  border: 1px solid #2590EB;
 }

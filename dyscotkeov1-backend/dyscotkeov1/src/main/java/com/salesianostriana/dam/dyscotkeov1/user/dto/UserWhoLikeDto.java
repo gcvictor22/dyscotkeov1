@@ -14,11 +14,13 @@ public class UserWhoLikeDto {
 
     private String userName;
     private String imgPath;
+    private boolean verified;
 
     public static UserWhoLikeDto of(User user){
         return UserWhoLikeDto.builder()
                 .userName(user.getUsername())
                 .imgPath(user.getImgPath())
+                .verified(user.isVerified())
                 .build();
     }
 

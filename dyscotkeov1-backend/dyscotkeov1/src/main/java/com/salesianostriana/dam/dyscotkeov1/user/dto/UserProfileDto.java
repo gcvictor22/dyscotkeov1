@@ -22,6 +22,8 @@ public class UserProfileDto {
     private String userName;
     private String fullName;
     private String imgPath;
+    private String email;
+    private String phoneNumber;
     private List<GetUserDto> follows;
     private List<GetUserDto> followers;
     private List<GetPostDto> publishedPosts;
@@ -37,6 +39,8 @@ public class UserProfileDto {
                 .fullName(user.getFullName())
                 .imgPath(user.getImgPath())
                 .createdAt(user.getCreatedAt())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
                 .follows(user.getFollows().stream().map(GetUserDto::of).collect(Collectors.toList()))
                 .followers(user.getFollowers().stream().map(GetUserDto::of).collect(Collectors.toList()))
                 .publishedPosts(user.getPublishedPosts().stream().map(GetPostDto::of).toList())

@@ -22,6 +22,7 @@ export const Login = () => {
           localStorage.setItem('token', res.data['token'])
           localStorage.setItem('loggedUser', res.data.userName)
           navigate(`/user/${username}`);
+          window.location.reload()
         })
       }).catch((error) => {
         Swal.fire({
