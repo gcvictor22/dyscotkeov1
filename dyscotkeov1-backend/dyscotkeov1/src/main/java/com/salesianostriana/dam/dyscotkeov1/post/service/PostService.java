@@ -39,14 +39,14 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public GetPageDto<GetPostDto> findAll(List<SearchCriteria> params, Pageable pageable) {
+    public GetPageDto<GetPostDto> findAll(List<SearchCriteria> params, Pageable pageable, User user) {
         if (postRepository.findAll().isEmpty())
             throw new EmptyPostListException();
 
         PSBuilder psBuilder = new PSBuilder(params);
 
         Specification<Post> spec = psBuilder.build();
-        Page<GetPostDto> pageGetClientDto = postRepository.findAll(spec, pageable).map(GetPostDto::of);
+        Page<GetPostDto> pageGetClientDto = postRepository.findAll(spec, pageable).map(p -> GetPostDto.of(p, user));
 
         return new GetPageDto<>(pageGetClientDto);
     }
@@ -64,7 +64,7 @@ public class PostService {
     public GetPostDto responseCreate(Post newPost, User user){
         newPost.addUser(user);
         userRepository.save(user);
-        return GetPostDto.of(newPost);
+        return GetPostDto.of(newPost, user);
     }
 
     public Post findById(Long id) {
@@ -107,7 +107,7 @@ public class PostService {
         postRepository.save(post);
         userRepository.save(loggedUser);
 
-        GetPostDto dto = GetPostDto.of(post);
+        GetPostDto dto = GetPostDto.of(post, loggedUser);
         if (Objects.equals(dto.getUserWhoPost().getUserName(), loggedUser.getUsername())){
             if (b){
                 dto.setUsersWhoLiked(dto.getUsersWhoLiked()-1);
@@ -115,6 +115,8 @@ public class PostService {
                 dto.setUsersWhoLiked(dto.getUsersWhoLiked()+1);
             }
         }
+
+        dto.setLikedByUser(!b);
 
         return dto;
     }

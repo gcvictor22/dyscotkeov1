@@ -36,7 +36,8 @@ public class Post implements Serializable{
     private User userWhoPost;
 
     @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
-    private List<User> usersWhoLiked;
+    @Builder.Default
+    private List<User> usersWhoLiked = new ArrayList<>();
 
     @OneToMany(mappedBy = "commentedPost", orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default

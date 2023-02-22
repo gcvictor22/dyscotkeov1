@@ -44,7 +44,6 @@ export const Profile = () => {
             setEditEmail(res.data.email);
             setEditFullName(res.data.fullName);
             setLikedPosts(res.data.likedPosts);
-
         }).catch((er) => {
             if (er.response.status === 404) {
                 navigate("*");
@@ -71,6 +70,7 @@ export const Profile = () => {
         setIsLoading(false);
         // eslint-disable-next-line
     }, []);
+
 
     const createPost = (e) => {
         e.preventDefault();
@@ -190,8 +190,9 @@ export const Profile = () => {
     }
 
     const likeAPost = (post) => {
-        axios.post(`/post/like/${post.id}`, null, { headers: headers }).then(() => {
-            window.location.reload();
+        axios.post(`/post/like/${post.id}`, null, { headers: headers }).then((res) => {
+            console.log(res);
+            console.log(likedPosts);
         }).catch((er) => {
             console.log(er);
         })
@@ -328,10 +329,7 @@ export const Profile = () => {
                                         <br />
                                         {postLoading === false && postsPage.content !== undefined &&
                                             pageContent.map((p) => {
-                                                var bool = false;
-                                                if (likedPosts.filter((po) => po.id === p.id).length > 0) {
-                                                    bool = true;
-                                                }
+                                                console.log(p);
                                                 return <div className="post" key={p.id}>
                                                     <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
                                                         <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
@@ -340,11 +338,15 @@ export const Profile = () => {
                                                             <FontAwesomeIcon icon={faCheckCircle} color="#2590EB" size="1x" className="verificadoUser" />
                                                         }
                                                     </button>
-                                                    { bool &&
-                                                        <FontAwesomeIcon icon={faHeart} className="likePostButton" onClick={() => likeAPost(p)} size={"2x"} color="red"/>
+                                                    {p.likedByUser === true &&
+                                                        <FontAwesomeIcon icon={faHeart} className="likePostButton" onClick={() => {
+                                                            likeAPost(p);
+                                                            likedPosts.splice(likedPosts.indexOf(p)-1, 1);
+                                                            setLikedPosts(likedPosts);
+                                                        }} size={"2x"} color="red" />
                                                     }
-                                                    { !bool &&
-                                                        <FontAwesomeIcon icon={faHeart} className="likePostButton" onClick={() => likeAPost(p)} size={"2x"} />
+                                                    {p.likedByUser === false &&
+                                                        <FontAwesomeIcon icon={faHeart} className="likePostButton" onClick={() => { likeAPost(p); likedPosts.push(p) }} size={"2x"} />
                                                     }
                                                     <h3>{p.affair}</h3>
                                                     <p>{p.content}</p>

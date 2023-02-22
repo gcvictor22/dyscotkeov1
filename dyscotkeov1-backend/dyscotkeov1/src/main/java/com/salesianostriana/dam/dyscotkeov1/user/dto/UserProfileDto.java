@@ -43,8 +43,8 @@ public class UserProfileDto {
                 .phoneNumber(user.getPhoneNumber())
                 .follows(user.getFollows().stream().map(GetUserDto::of).collect(Collectors.toList()))
                 .followers(user.getFollowers().stream().map(GetUserDto::of).collect(Collectors.toList()))
-                .publishedPosts(user.getPublishedPosts().stream().map(GetPostDto::of).toList())
-                .likedPosts(user.getLikedPosts().stream().map(GetPostDto::of).toList())
+                .publishedPosts(user.getPublishedPosts().stream().map(p -> GetPostDto.of(p, user)).toList())
+                .likedPosts(user.getLikedPosts().stream().map(p -> GetPostDto.of(p, user)).toList())
                 .verified(user.isVerified())
                 .build();
     }

@@ -30,11 +30,12 @@ public class GetPostDto {
     private UserWhoLikeDto userWhoPost;
     private int usersWhoLiked;
     private int comments;
+    private boolean likedByUser;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime postDate;
 
-    public static GetPostDto of(Post post){
+    public static GetPostDto of(Post post, User user){
         return GetPostDto.builder()
                 .id(post.getId())
                 .affair(post.getAffair())
@@ -44,6 +45,7 @@ public class GetPostDto {
                 .usersWhoLiked(post.getUsersWhoLiked() == null ? 0 : post.getUsersWhoLiked().size())
                 .comments(post.getComments() == null ? 0 : post.getComments().size())
                 .postDate(post.getPostDate())
+                .likedByUser(user.getLikedPosts().contains(post))
                 .build();
     }
 
