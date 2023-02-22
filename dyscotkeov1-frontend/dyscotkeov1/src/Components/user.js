@@ -1,8 +1,8 @@
-import axios, { } from "axios";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { faCheckCircle, faArrowLeft, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faArrowLeft, faHeart, faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const headers = {
@@ -32,8 +32,8 @@ export const Profile = () => {
     const [editPhoneNumber, setEditPhoneNumber] = useState('');
     const [editEmail, setEditEmail] = useState('');
     const [editFullName, setEditFullName] = useState('');
-    const [likedPosts, setLikedPosts] = useState([]);
     const [pageContent, setPageContent] = useState([]);
+    const [publishedPosts, setPublishedPosts] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -43,7 +43,7 @@ export const Profile = () => {
             setEditPhoneNumber(res.data.phoneNumber);
             setEditEmail(res.data.email);
             setEditFullName(res.data.fullName);
-            setLikedPosts(res.data.likedPosts);
+            setPublishedPosts(res.data.publishedPosts);
         }).catch((er) => {
             if (er.response.status === 404) {
                 navigate("*");
@@ -70,7 +70,6 @@ export const Profile = () => {
         setIsLoading(false);
         // eslint-disable-next-line
     }, []);
-
 
     const createPost = (e) => {
         e.preventDefault();
@@ -149,11 +148,28 @@ export const Profile = () => {
             setPostsPage(res.data);
             setPageContent(res.data.content);
         }).catch((er) => {
-            console.log(er);
         })
         setPostLoading(false);
         // eslint-disable-next-line
-    }, [pageNumber])
+    }, [pageNumber]);
+
+    function deletePost (post) {
+        var divPost = document.getElementById("post" + post.id);
+        var divPost2 = document.getElementById("postTodos"+post.id);
+        if (divPost !== null) {
+            divPost.style.display = "none"
+            divPost2.style.display = "none"
+        }
+
+        axios.delete(`/post/${post.id}`, { headers: headers }).catch(() => {
+            Swal.fire({
+                icon: "error",
+                title: "Ha ocurrido un error",
+                showConfirmButton: false,
+                timer: 1500
+            })
+        })
+    }
 
     function navigateTo(params) {
         if (params !== userName) {
@@ -192,10 +208,19 @@ export const Profile = () => {
     const likeAPost = (post) => {
         axios.post(`/post/like/${post.id}`, null, { headers: headers }).then((res) => {
             console.log(res);
-            console.log(likedPosts);
         }).catch((er) => {
             console.log(er);
         })
+    }
+
+    function cambiarIcono(id) {
+        var corazon = document.getElementById("corazon" + id);
+
+        if (corazon.style.color === "red") {
+            corazon.style.color = "white";
+        } else {
+            corazon.style.color = "red"
+        }
     }
 
     const logOut = () => {
@@ -209,7 +234,12 @@ export const Profile = () => {
             console.log(res);
             localStorage.setItem("loggedUser", editUserName);
         }).catch((er) => {
-            console.log(er);
+            Swal.fire({
+                icon: "error",
+                title: er.response.data.subErrors[0].message,
+                timer: 1500,
+                showConfirmButton: false
+            })
         })
     }
 
@@ -250,8 +280,8 @@ export const Profile = () => {
                 </button>
                 <div id="postForm">
                     <form onSubmit={createPost}>
-                        <input type="text" maxLength="50" onChange={(e) => setAffair(e.target.value)}></input>
-                        <textarea onChange={(e) => { setContent(e.target.value); setNumResCar(250 - e.target.value.length); prog.style.width = (e.target.value.length * 70) / 250 + "px" }} maxLength="250"></textarea>
+                        <input type="text" maxLength="50" placeholder="Título?" onChange={(e) => setAffair(e.target.value)}></input>
+                        <textarea onChange={(e) => { setContent(e.target.value); setNumResCar(250 - e.target.value.length); prog.style.width = (e.target.value.length * 70) / 250 + "px" }} maxLength="250" placeholder="¿Qué pasa esta noche?"></textarea>
                         <div className="porcentaje">
                             <p>{numResCar}</p><div id="porcentajeBG">
                                 <div id="porcentajaProg"></div>
@@ -290,9 +320,11 @@ export const Profile = () => {
                                 <li><a href="#Product" data-toggle="tab">Product</a></li>
                             }
                             {localStorage.getItem("loggedUser") !== userName &&
-                                <li className="active"><a href="#Product" data-toggle="tab">Product</a></li>
+                                <li className="active"><a href="#Publicaciones" data-toggle="tab">Publicaciones</a></li>
                             }
-                            <li><a href="#CSS" data-toggle="tab">CSS</a></li>
+                            {localStorage.getItem("loggedUser") === userName &&
+                                <li><a href="#Publicaciones" data-toggle="tab">Publicaciones</a></li>
+                            }
                             <li><a href="#Javascript" data-toggle="tab">Javascript</a></li>
                             <li><a href="#Bootstrap" data-toggle="tab">Bootstrap</a></li>
                             <li><a href="#Jquery" data-toggle="tab">Jqeury</a></li>
@@ -329,8 +361,7 @@ export const Profile = () => {
                                         <br />
                                         {postLoading === false && postsPage.content !== undefined &&
                                             pageContent.map((p) => {
-                                                console.log(p);
-                                                return <div className="post" key={p.id}>
+                                                return <div className="post" id={"postTodos"+p.id} key={p.id}>
                                                     <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
                                                         <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
                                                         <p>{p.userWhoPost.userName}</p>
@@ -338,16 +369,7 @@ export const Profile = () => {
                                                             <FontAwesomeIcon icon={faCheckCircle} color="#2590EB" size="1x" className="verificadoUser" />
                                                         }
                                                     </button>
-                                                    {p.likedByUser === true &&
-                                                        <FontAwesomeIcon icon={faHeart} className="likePostButton" onClick={() => {
-                                                            likeAPost(p);
-                                                            likedPosts.splice(likedPosts.indexOf(p)-1, 1);
-                                                            setLikedPosts(likedPosts);
-                                                        }} size={"2x"} color="red" />
-                                                    }
-                                                    {p.likedByUser === false &&
-                                                        <FontAwesomeIcon icon={faHeart} className="likePostButton" onClick={() => { likeAPost(p); likedPosts.push(p) }} size={"2x"} />
-                                                    }
+                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={p.likedByUser ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id) }} size={"2x"} id={"corazon" + p.id} color="red" />
                                                     <h3>{p.affair}</h3>
                                                     <p>{p.content}</p>
                                                     {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
@@ -367,12 +389,6 @@ export const Profile = () => {
                             }
                             {localStorage.getItem("loggedUser") === userName &&
                                 <div id="Product" className="tab-pane fade">
-                                    <h3>Product</h3>
-                                    <p>Advanced extended doubtful he he blessing together. Introduced far law gay considered frequently entreaties difficulty. Eat him four are rich nor calm. By an packages rejoiced exercise. To ought on am marry rooms doubt music. Mention entered an through company as. Up arrived no painful between. It declared is prospect an insisted pleasure. </p>
-                                </div>
-                            }
-                            {localStorage.getItem("loggedUser") !== userName &&
-                                <div id="Product" className="tab-pane fade in active">
                                     <h3>Product</h3>
                                     <p>Advanced extended doubtful he he blessing together. Introduced far law gay considered frequently entreaties difficulty. Eat him four are rich nor calm. By an packages rejoiced exercise. To ought on am marry rooms doubt music. Mention entered an through company as. Up arrived no painful between. It declared is prospect an insisted pleasure. </p>
                                 </div>
@@ -401,9 +417,44 @@ export const Profile = () => {
                                     <input type="submit" value="Guardar" id="submitSaveImg"></input>
                                 </form>
                             </div>
-                            <div id="CSS" className="tab-pane fade">
-                                <h3>CSS Tutorial</h3>
-                                <p>CSS is a stylesheet language that describes the presentation of an HTML (or XML) document. CSS describes how elements must be rendered on screen, on paper, or in other media. This tutorial will teach you CSS from basic to advanced.</p>
+                            <div id="Publicaciones" className="tab-pane fade in active">
+                                <h3>Publicaciones de {userName}</h3>
+                                <div id="divPosts">
+                                    {publishedPosts.length < 1 &&
+                                        <p id="noHayPost">No hay ninguna publicación</p>
+                                    }
+                                    <br />
+                                    {postLoading === false && publishedPosts.length > 0 &&
+                                        publishedPosts.map((p) => {
+                                            return <div className="post" id={"post" + p.id} key={p.id}>
+                                                <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
+                                                    <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
+                                                    <p>{p.userWhoPost.userName}</p>
+                                                    {p.userWhoPost.verified &&
+                                                        <FontAwesomeIcon icon={faCheckCircle} color="#2590EB" size="1x" className="verificadoUser" />
+                                                    }
+                                                </button>
+                                                {p.userWhoPost.userName === localStorage.getItem("loggedUser") &&
+                                                    < FontAwesomeIcon icon={faTrash} className="deletePostButton" onClick={() => deletePost(p)} size="2x" />
+                                                }
+                                                {p.userWhoPost.userName === localStorage.getItem("loggedUser") &&
+                                                    < FontAwesomeIcon icon={faPencil} className="editPostButton" size="2x" />
+                                                }
+                                                <h3>{p.affair}</h3>
+                                                <p>{p.content}</p>
+                                                {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
+                                                    <div className="imgPostContainer">
+                                                        {
+                                                            p.imgPath.map((i) => {
+                                                                return <div className="sigleImgPost" key={i}><img src={`http://localhost:8080/file/${i}`} alt="" /></div>
+                                                            })
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        })
+                                    }
+                                </div>
                             </div>
                             <div id="Javascript" className="tab-pane fade">
                                 <h3>Javascript Tutorial</h3>

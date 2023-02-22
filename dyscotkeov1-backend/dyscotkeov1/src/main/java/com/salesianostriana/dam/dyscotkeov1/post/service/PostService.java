@@ -116,8 +116,6 @@ public class PostService {
             }
         }
 
-        dto.setLikedByUser(!b);
-
         return dto;
     }
 }

@@ -16,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -45,7 +47,7 @@ public class GetPostDto {
                 .usersWhoLiked(post.getUsersWhoLiked() == null ? 0 : post.getUsersWhoLiked().size())
                 .comments(post.getComments() == null ? 0 : post.getComments().size())
                 .postDate(post.getPostDate())
-                .likedByUser(user.getLikedPosts().contains(post))
+                .likedByUser(user.getLikedPosts().stream().filter(p -> Objects.equals(p.getId(), post.getId())).toList().size() > 0)
                 .build();
     }
 

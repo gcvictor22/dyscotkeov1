@@ -635,7 +635,7 @@ a {
 #divPosts{
   margin: 15px auto;
   width: 700px;
-  height: 450px;
+  height: 460px;
   overflow-y: scroll;
   color: #FFFFFF;
 }
@@ -993,9 +993,21 @@ a {
   }
 }
 
-.likePostButton{
+.likePostButton, .editPostButton{
   position: absolute;
   right: 3%;
+  transition: all 0.2s;
+}
+
+.deletePostButton{
+  position: absolute;
+  right: 10%;
+  color: white;
+  transition: all 0.2s;
+}
+
+.deletePostButton:hover, .likePostButton:hover, .editPostButton:hover{
+  transform: scale(1.1);
 }
 
 #editForm{
