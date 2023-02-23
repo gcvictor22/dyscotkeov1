@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.salesianostriana.dam.dyscotkeov1.comment.model.Comment;
 import com.salesianostriana.dam.dyscotkeov1.post.model.Post;
 import com.salesianostriana.dam.dyscotkeov1.user.dto.GetUserDto;
+import com.salesianostriana.dam.dyscotkeov1.user.dto.UserWhoLikeDto;
 import com.salesianostriana.dam.dyscotkeov1.user.model.User;
 import com.salesianostriana.dam.dyscotkeov1.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -26,23 +29,25 @@ public class GetPostDto {
     private String affair;
     private String content;
     private List<String> imgPath;
-    private String userWhoPost;
+    private UserWhoLikeDto userWhoPost;
     private int usersWhoLiked;
     private int comments;
+    private boolean likedByUser;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime postDate;
 
-    public static GetPostDto of(Post post){
+    public static GetPostDto of(Post post, User user){
         return GetPostDto.builder()
                 .id(post.getId())
                 .affair(post.getAffair())
                 .content(post.getContent())
-                .imgPath(post.getImgPath())
-                .userWhoPost(post.getUserWhoPost().getUsername())
+                .imgPath(post.getImgPaths())
+                .userWhoPost(UserWhoLikeDto.of(post.getUserWhoPost()))
                 .usersWhoLiked(post.getUsersWhoLiked() == null ? 0 : post.getUsersWhoLiked().size())
                 .comments(post.getComments() == null ? 0 : post.getComments().size())
                 .postDate(post.getPostDate())
+                .likedByUser(user.getLikedPosts().stream().filter(p -> Objects.equals(p.getId(), post.getId())).toList().size() > 0)
                 .build();
     }
 

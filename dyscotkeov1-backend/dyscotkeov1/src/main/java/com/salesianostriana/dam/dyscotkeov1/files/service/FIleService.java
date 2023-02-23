@@ -31,7 +31,7 @@ public class FIleService {
         String name = storageService.store(file);
 
         String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
+                .path("/file/")
                 .path(name)
                 .toUriString();
 
@@ -49,11 +49,15 @@ public class FIleService {
         if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername()))
             throw new PostAccessDeniedExeption();
 
-        if (post.getImgPath().size()+result.size() > 4)
+        post.getImgPaths().remove("VACIO");
+
+        if (post.getImgPaths().size()+result.size() > 4){
+            post.getImgPaths().add("VACIO");
             throw new NotAllowedCountFilesException();
+        }
 
         result.forEach(r -> {
-            post.getImgPath().add(r.getName());
+            post.getImgPaths().add(r.getName());
         });
         postRepository.save(post);
     }
@@ -61,13 +65,17 @@ public class FIleService {
     public ResponseEntity<?> deleteImgFromPost(Long idPost, String imgName, User loggedUser) {
         Post post = postRepository.findById(idPost).orElseThrow(() -> new PostNotFoundException(idPost));
 
-        if (!post.getImgPath().contains(imgName))
+        if (!post.getImgPaths().contains(imgName))
             throw new FileInPostBadRequestException(imgName);
 
         if (!Objects.equals(loggedUser.getUsername(), post.getUserWhoPost().getUsername()))
             throw new PostAccessDeniedExeption();
 
-        post.getImgPath().remove(imgName);
+        post.getImgPaths().remove(imgName);
+
+        if (post.getImgPaths().isEmpty())
+            post.getImgPaths().add("VACIO");
+
         postRepository.save(post);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -32,14 +32,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
 
-    public GetPageDto<GetUserDto> findAll(List<SearchCriteria> params, Pageable pageable){
+    public GetPageDto<GetUserDto> findAll(List<SearchCriteria> params, Pageable pageable, User user){
         if (userRepository.findAll().isEmpty())
             throw new EmptyUserListException();
 
         USBuilder usBuilder = new USBuilder(params);
 
         Specification<User> spec = usBuilder.build();
-        Page<GetUserDto> pageGetClientDto = userRepository.findAll(spec, pageable).map(GetUserDto::of);
+        Page<GetUserDto> pageGetClientDto = userRepository.findAll(spec, pageable).map(u -> GetUserDto.ofs(u, user));
 
         return new GetPageDto<>(pageGetClientDto);
     }
@@ -50,6 +50,7 @@ public class UserService {
                 .password(passwordEncoder.encode(createUser.getPassword()))
                 .email(createUser.getEmail())
                 .phoneNumber(createUser.getPhoneNumber())
+                .imgPath("default.png")
                 .fullName(createUser.getFullName())
                 .roles(roles)
                 .createdAt(createUser.getCreatedAt())
@@ -64,13 +65,15 @@ public class UserService {
 
     public User changePassword(User loggedUser, EditPasswordDto changePasswordDto) {
 
-        if (!Objects.equals(loggedUser.getPassword(), changePasswordDto.getOldPassword()))
+        if (! passwordEncoder.matches(changePasswordDto.getOldPassword(), loggedUser.getPassword())){
+            System.out.println(loggedUser.getPassword()+" "+passwordEncoder.encode(changePasswordDto.getOldPassword()));
             throw new EqualOldNewPasswordException();
+        }
 
         return userRepository.findById(loggedUser.getId())
                 .map(old -> {
                     old.setLastPasswordChangeAt(LocalDateTime.now());
-                    old.setPassword(changePasswordDto.getNewPassword());
+                    old.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
                     return userRepository.save(old);
                 })
                 .orElseThrow(() -> new UserNotFoundException(loggedUser.getId()));

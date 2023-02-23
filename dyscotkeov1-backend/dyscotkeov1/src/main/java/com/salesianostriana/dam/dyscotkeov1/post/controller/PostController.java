@@ -34,10 +34,10 @@ public class PostController {
     @GetMapping("/")
     public GetPageDto<GetPostDto> findAll(
             @RequestParam(value = "s", defaultValue = "") String search,
-            @PageableDefault(size = 20, page = 0) Pageable pageable){
+            @PageableDefault(size = 20, page = 0) Pageable pageable, @AuthenticationPrincipal User user){
 
         List<SearchCriteria> params = Extractor.extractSearchCriteriaList(search);
-        return postService.findAll(params, pageable);
+        return postService.findAll(params, pageable, user);
     }
 
     @GetMapping("/{id}")

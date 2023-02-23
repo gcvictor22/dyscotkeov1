@@ -39,25 +39,25 @@ public class UserController {
     @GetMapping("/")
     public GetPageDto<GetUserDto> findAll(
             @RequestParam(value = "s", defaultValue = "") String search,
-            @PageableDefault(size = 20, page = 0) Pageable pageable){
+            @PageableDefault(size = 20, page = 0) Pageable pageable, @AuthenticationPrincipal User user){
 
         List<SearchCriteria> params = Extractor.extractSearchCriteriaList(search);
-        return userService.findAll(params, pageable);
+        return userService.findAll(params, pageable, user);
     }
 
     @GetMapping("/profile")
     public UserProfileDto viewProfile(@AuthenticationPrincipal User loggedUser){
-        return UserProfileDto.of(userService.getProfile(loggedUser.getId()));
+        return UserProfileDto.of(loggedUser, userService.getProfile(loggedUser.getId()));
     }
 
     @GetMapping("/{id}")
-    public UserProfileDto viewUser(@PathVariable UUID id){
-        return UserProfileDto.of(userService.getProfile(id));
+    public UserProfileDto viewUser(@PathVariable UUID id, @AuthenticationPrincipal User user){
+        return UserProfileDto.of(userService.getProfile(id), user);
     }
 
     @GetMapping("userName/{userName}")
-    public UserProfileDto viewUserProfile(@PathVariable String userName){
-        return UserProfileDto.of(userService.getProfileByUserName(userName));
+    public UserProfileDto viewUserProfile(@PathVariable String userName, @AuthenticationPrincipal User user){
+        return UserProfileDto.of(userService.getProfileByUserName(userName), user);
     }
 
     @PostMapping("/login")
@@ -91,7 +91,7 @@ public class UserController {
 
         User user = userService.follow(loggedUser, username);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.of(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(GetUserDto.ofs(user, loggedUser));
     }
 
     @PutMapping("/edit/password")

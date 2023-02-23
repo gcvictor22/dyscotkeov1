@@ -27,15 +27,17 @@ public class Post implements Serializable{
     private String affair;
     private String content;
 
-    @ElementCollection
-    private List<String> imgPath;
+    @Convert(converter = ImgPathConverter.class)
+    @Builder.Default
+    private List<String> imgPaths = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "userWhoPost", foreignKey = @ForeignKey(name = "FK_USER_COMMENT"))
     private User userWhoPost;
 
     @ManyToMany(mappedBy = "likedPosts", fetch = FetchType.EAGER)
-    private List<User> usersWhoLiked;
+    @Builder.Default
+    private List<User> usersWhoLiked = new ArrayList<>();
 
     @OneToMany(mappedBy = "commentedPost", orphanRemoval = true, cascade = CascadeType.ALL)
     @Builder.Default
