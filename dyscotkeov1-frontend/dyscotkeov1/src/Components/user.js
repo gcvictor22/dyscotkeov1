@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { faCheckCircle, faArrowLeft, faHeart, faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faArrowLeft, faHeart, faTrash, faPencil, faUserPlus, faUserMinus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const headers = {
@@ -34,6 +34,10 @@ export const Profile = () => {
     const [editFullName, setEditFullName] = useState('');
     const [pageContent, setPageContent] = useState([]);
     const [publishedPosts, setPublishedPosts] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+    const [userPageNumber, setUserPageNumber] = useState(0);
+    const [searchUserName, setSearchUserName] = useState('');
+    const [loadingUsers, setLoadingUsers] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -153,21 +157,61 @@ export const Profile = () => {
         // eslint-disable-next-line
     }, [pageNumber]);
 
-    function deletePost (post) {
-        var divPost = document.getElementById("post" + post.id);
-        var divPost2 = document.getElementById("postTodos"+post.id);
-        if (divPost !== null) {
-            divPost.style.display = "none"
-            divPost2.style.display = "none"
+    useEffect(() => {
+        axios.get(`/user/?page=${userPageNumber}&s=userName:${searchUserName}`, { headers: headers }).then((res) => {
+            setLoadingUsers(false);
+            setAllUsers(res.data);
+        }).catch((er) => {
+            console.log(er);
+        })
+    }, [userPageNumber, searchUserName])
+
+    const follow = (u) => {
+        var boton = document.getElementById("followBoton" + u.id);
+        if (boton.style.color === "white") {
+            boton.style.background = "white"
+            boton.style.color = "#2590EB"
+
+            boton.value = "  Seguir  "
+        } else {
+            boton.style.background = "#2590EB"
+            boton.style.color = "white"
+            boton.style.border = "2px solid white"
+            boton.value = "Eliminar "
         }
 
-        axios.delete(`/post/${post.id}`, { headers: headers }).catch(() => {
-            Swal.fire({
-                icon: "error",
-                title: "Ha ocurrido un error",
-                showConfirmButton: false,
-                timer: 1500
-            })
+        axios.post(`/user/follow/${u.userName}`, null, { headers: headers }).then((res) => {
+            console.log(res);
+        }).catch((er) => {
+            console.log(er);
+        })
+    }
+
+    function deletePost(post) {
+        Swal.fire({
+            title: '¿Seguro qué quieres eliminar el post?',
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Eliminar',
+            confirmButtonColor: 'red',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var divPost = document.getElementById("post" + post.id);
+                var divPost2 = document.getElementById("postTodos" + post.id);
+                if (divPost !== null) {
+                    divPost.style.display = "none"
+                    divPost2.style.display = "none"
+                }
+
+                axios.delete(`/post/${post.id}`, { headers: headers }).catch(() => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Ha ocurrido un error",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                })
+            }
         })
     }
 
@@ -317,7 +361,7 @@ export const Profile = () => {
                                 <li className="active"><a href="#Posts" data-toggle="tab">Todos los posts</a></li>
                             }
                             {localStorage.getItem("loggedUser") === userName &&
-                                <li><a href="#Product" data-toggle="tab">Product</a></li>
+                                <li><a href="#Usuarios" data-toggle="tab">Usuarios</a></li>
                             }
                             {localStorage.getItem("loggedUser") !== userName &&
                                 <li className="active"><a href="#Publicaciones" data-toggle="tab">Publicaciones</a></li>
@@ -361,7 +405,7 @@ export const Profile = () => {
                                         <br />
                                         {postLoading === false && postsPage.content !== undefined &&
                                             pageContent.map((p) => {
-                                                return <div className="post" id={"postTodos"+p.id} key={p.id}>
+                                                return <div className="post" id={"postTodos" + p.id} key={p.id}>
                                                     <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
                                                         <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
                                                         <p>{p.userWhoPost.userName}</p>
@@ -388,9 +432,50 @@ export const Profile = () => {
                                 </div>
                             }
                             {localStorage.getItem("loggedUser") === userName &&
-                                <div id="Product" className="tab-pane fade">
-                                    <h3>Product</h3>
-                                    <p>Advanced extended doubtful he he blessing together. Introduced far law gay considered frequently entreaties difficulty. Eat him four are rich nor calm. By an packages rejoiced exercise. To ought on am marry rooms doubt music. Mention entered an through company as. Up arrived no painful between. It declared is prospect an insisted pleasure. </p>
+                                <div id="Usuarios" className="tab-pane fade">
+                                    <div id="buscador">
+                                        <h3>Todos los usuario</h3>
+                                        <input placeholder="Buscar..." type="search" onChange={(e) => (setSearchUserName(e.target.value), setUserPageNumber(0))}></input>
+                                    </div>
+                                    <div id="divPosts">
+                                        {allUsers === undefined &&
+                                            <p id="noHayPost">No existen usuarios</p>
+                                        }
+                                        {// eslint-disable-next-line
+                                            allUsers !== undefined && allUsers.totalElements > 20 &&
+                                            <div id="paginadorPosts">
+                                                <div id="paginacion">
+                                                    {postsPage.first !== true &&
+                                                        <button id="atras" onClick={() => setUserPageNumber(userPageNumber - 1)}>&#8678;</button>
+                                                    }
+                                                    {postsPage.totalElements > 20 &&
+                                                        <button id="numPagina">{userPageNumber + 1}</button>
+                                                    }
+                                                    {postsPage.last !== true &&
+                                                        <button id="siguiente" onClick={() => setUserPageNumber(userPageNumber + 1)}>&#8680;</button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        <br />
+                                        {loadingUsers === false && allUsers !== undefined &&
+                                            allUsers.content.map((u) => {
+                                                return <div key={u.id}>
+                                                    {u.userName !== localStorage.getItem("loggedUser") &&
+                                                        <div className="user" id={"userTodos" + u.id}>
+                                                            <img src={`http://localhost:8080/file/${u.imgPath}`} alt="" />
+                                                            <input type="button" id={"followBoton" + u.id} value={u.followedByUser ? "Eliminar " : "  Seguir  "} onClick={() => follow(u)} className="followUser" size="2x" style={u.followedByUser ? { border: "2px solid white", background: "#2590EB", color: "white" } : { color: "#2590EB", background: "white", border: "2px solid #2590EB" }} />
+                                                            <div className="datasUsuarios">
+                                                                <h2>{u.userName} <span>{u.verified && <FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" className="verificadoUser" />}</span></h2>
+                                                                <p>{u.fullName}</p>
+                                                                <p><b>Followers: </b>{u.followers > 999 ? u.followers > 1000000 ? (u.followers/1000000).toFixed(1)+"M" : u.followers/1000 : u.followers}</p>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            })
+                                        }
+                                    </div>
                                 </div>
                             }
                             <div id="Editar" className="tab-pane fade">

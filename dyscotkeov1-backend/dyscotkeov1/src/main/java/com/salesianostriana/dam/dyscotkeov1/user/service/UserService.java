@@ -32,14 +32,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
 
-    public GetPageDto<GetUserDto> findAll(List<SearchCriteria> params, Pageable pageable){
+    public GetPageDto<GetUserDto> findAll(List<SearchCriteria> params, Pageable pageable, User user){
         if (userRepository.findAll().isEmpty())
             throw new EmptyUserListException();
 
         USBuilder usBuilder = new USBuilder(params);
 
         Specification<User> spec = usBuilder.build();
-        Page<GetUserDto> pageGetClientDto = userRepository.findAll(spec, pageable).map(GetUserDto::of);
+        Page<GetUserDto> pageGetClientDto = userRepository.findAll(spec, pageable).map(u -> GetUserDto.ofs(u, user));
 
         return new GetPageDto<>(pageGetClientDto);
     }

@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -26,6 +27,7 @@ public class GetUserDto {
     protected int followers;
     protected int countOfPosts;
     protected boolean verified;
+    protected boolean followedByUser;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     protected LocalDateTime createdAt;
@@ -39,6 +41,20 @@ public class GetUserDto {
                 .followers(c.getFollowers() == null ? 0 : c.getFollowers().size())
                 .countOfPosts(c.getPublishedPosts() == null ? 0 : c.getPublishedPosts().size())
                 .verified(c.isVerified())
+                .createdAt(c.getCreatedAt())
+                .build();
+    }
+
+    public static GetUserDto ofs(User c, User loggedUser){
+        return GetUserDto.builder()
+                .id(c.getId())
+                .userName(c.getUsername())
+                .fullName(c.getFullName())
+                .imgPath(c.getImgPath())
+                .followers(c.getFollowers() == null ? 0 : c.getFollowers().size())
+                .countOfPosts(c.getPublishedPosts() == null ? 0 : c.getPublishedPosts().size())
+                .verified(c.isVerified())
+                .followedByUser(c.getFollowers().stream().filter(u -> Objects.equals(u.getId(), loggedUser.getId())).toList().size() > 0)
                 .createdAt(c.getCreatedAt())
                 .build();
     }
