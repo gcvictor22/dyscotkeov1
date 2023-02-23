@@ -415,7 +415,7 @@ export const Profile = () => {
                                                         }
                                                     </button>
                                                     <span className="numberUsersWhoLiked" id={"numLike" + p.id}>{p.usersWhoLiked}</span>
-                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id); var l = document.getElementById("numLike" + p.id); var c = document.getElementById("corazon"+p.id) ; c.style.color !== "white" ? l.innerHTML = parseInt(parseInt(l.innerHTML) + 1) : l.innerHTML = parseInt(parseInt(l.innerHTML) - 1); }} size={"2x"} id={"corazon" + p.id} color="red" />
+                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id); var l = document.getElementById("numLike" + p.id); var c = document.getElementById("corazon" + p.id); c.style.color !== "white" ? l.innerHTML = parseInt(parseInt(l.innerHTML) + 1) : l.innerHTML = parseInt(parseInt(l.innerHTML) - 1); var mgP = document.getElementById("postTodos2" + p.id); mgP.style.display === "block" ? mgP.style.display = "none" : mgP.style.display = "block" }} size={"2x"} id={"corazon" + p.id} color="red" />
                                                     <h3>{p.affair}</h3>
                                                     <p>{p.content}</p>
                                                     {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
@@ -558,6 +558,7 @@ export const Profile = () => {
                                         user.likedPosts.map((p) => {
                                             var bool = p.likedByUser;
                                             return <div className="post" id={"postTodos2" + p.id} key={p.id}>
+                                                {document.getElementById("postTodos2" + p.id).style.display = "block"}
                                                 <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
                                                     <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
                                                     <p>{p.userWhoPost.userName}</p>
@@ -566,7 +567,7 @@ export const Profile = () => {
                                                     }
                                                 </button>
                                                 <span className="numberUsersWhoLiked" id={"numLike2" + p.id}>{p.usersWhoLiked}</span>
-                                                <button icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => {document.getElementById("postTodos2"+p.id).style.display = "none"; likeAPost(p); document.getElementById("corazon"+p.id).style.color = "white";var n = document.getElementById("numLike"+p.id); n.innerHTML = parseInt(parseInt(n.innerHTML)-1)}} size={"2x"} id={"corazon" + p.id} color="red">Eliminar</button>
+                                                <button icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { document.getElementById("postTodos2" + p.id).style.display = "none"; likeAPost(p); document.getElementById("corazon" + p.id).style.color = "white"; var n = document.getElementById("numLike" + p.id); n.innerHTML = parseInt(parseInt(n.innerHTML) - 1) }} size={"2x"} id={"corazon" + p.id} color="red">Eliminar</button>
                                                 <h3>{p.affair}</h3>
                                                 <p>{p.content}</p>
                                                 {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
