@@ -635,7 +635,7 @@ a {
 #divPosts{
   margin: 15px auto;
   width: 700px;
-  height: 460px;
+  height: 560px;
   overflow-y: scroll;
   color: #FFFFFF;
 }
@@ -1119,4 +1119,10 @@ a {
 
 .datasUsuarios span{
   height: max-content;
+}
+
+.numberUsersWhoLiked{
+  position: absolute;
+  right: 9%;
+  top: 15px;
 }

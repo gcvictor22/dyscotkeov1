@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { faCheckCircle, faArrowLeft, faHeart, faTrash, faPencil, faUserPlus, faUserMinus } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faArrowLeft, faHeart, faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const headers = {
@@ -369,7 +369,7 @@ export const Profile = () => {
                             {localStorage.getItem("loggedUser") === userName &&
                                 <li><a href="#Publicaciones" data-toggle="tab">Publicaciones</a></li>
                             }
-                            <li><a href="#Javascript" data-toggle="tab">Javascript</a></li>
+                            <li><a href="#Javascript" data-toggle="tab">Favoritos</a></li>
                             <li><a href="#Bootstrap" data-toggle="tab">Bootstrap</a></li>
                             <li><a href="#Jquery" data-toggle="tab">Jqeury</a></li>
                             {localStorage.getItem('loggedUser') === userName &&
@@ -405,6 +405,7 @@ export const Profile = () => {
                                         <br />
                                         {postLoading === false && postsPage.content !== undefined &&
                                             pageContent.map((p) => {
+                                                var bool = p.likedByUser;
                                                 return <div className="post" id={"postTodos" + p.id} key={p.id}>
                                                     <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
                                                         <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
@@ -413,7 +414,8 @@ export const Profile = () => {
                                                             <FontAwesomeIcon icon={faCheckCircle} color="#2590EB" size="1x" className="verificadoUser" />
                                                         }
                                                     </button>
-                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={p.likedByUser ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id) }} size={"2x"} id={"corazon" + p.id} color="red" />
+                                                    <span className="numberUsersWhoLiked" id={"numLike" + p.id}>{p.usersWhoLiked}</span>
+                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id); var l = document.getElementById("numLike" + p.id); var c = document.getElementById("corazon"+p.id) ; c.style.color !== "white" ? l.innerHTML = parseInt(parseInt(l.innerHTML) + 1) : l.innerHTML = parseInt(parseInt(l.innerHTML) - 1); }} size={"2x"} id={"corazon" + p.id} color="red" />
                                                     <h3>{p.affair}</h3>
                                                     <p>{p.content}</p>
                                                     {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
@@ -435,7 +437,9 @@ export const Profile = () => {
                                 <div id="Usuarios" className="tab-pane fade">
                                     <div id="buscador">
                                         <h3>Todos los usuario</h3>
-                                        <input placeholder="Buscar..." type="search" onChange={(e) => (setSearchUserName(e.target.value), setUserPageNumber(0))}></input>
+                                        {// eslint-disable-next-line
+                                            <input placeholder="Buscar..." type="search" onChange={(e) => (setSearchUserName(e.target.value), setUserPageNumber(0))}></input>
+                                        }
                                     </div>
                                     <div id="divPosts">
                                         {allUsers === undefined &&
@@ -460,15 +464,17 @@ export const Profile = () => {
                                         <br />
                                         {loadingUsers === false && allUsers !== undefined &&
                                             allUsers.content.map((u) => {
+                                                var bool = u.followedByUser;
+                                                var bool2 = u.followers >= 1;
                                                 return <div key={u.id}>
                                                     {u.userName !== localStorage.getItem("loggedUser") &&
                                                         <div className="user" id={"userTodos" + u.id}>
                                                             <img src={`http://localhost:8080/file/${u.imgPath}`} alt="" />
-                                                            <input type="button" id={"followBoton" + u.id} value={u.followedByUser ? "Eliminar " : "  Seguir  "} onClick={() => follow(u)} className="followUser" size="2x" style={u.followedByUser ? { border: "2px solid white", background: "#2590EB", color: "white" } : { color: "#2590EB", background: "white", border: "2px solid #2590EB" }} />
+                                                            <input type="button" id={"followBoton" + u.id} value={u.followedByUser ? "Eliminar " : "  Seguir  "} onClick={() => { follow(u); var f = document.getElementById("foll" + u.id); var v = document.getElementById("verified" + u.id); bool = !bool; bool ? f.innerHTML = parseInt((parseInt(f.textContent) + 1)) : f.innerHTML = parseInt((f.textContent - 1)); parseInt(document.getElementById("foll" + u.id).innerHTML) >= 1 ? bool2 = true : bool2 = !bool2; bool2 ? v.style.visibility = "visible" : v.style.visibility = "hidden" }} className="followUser" size="2x" style={u.followedByUser ? { border: "2px solid white", background: "#2590EB", color: "white" } : { color: "#2590EB", background: "white", border: "2px solid #2590EB" }} />
                                                             <div className="datasUsuarios">
-                                                                <h2>{u.userName} <span>{u.verified && document.getElementById &&<FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" className="verificadoUser" />}</span></h2>
+                                                                <h2>{u.userName} <span><FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" id={"verified" + u.id} style={bool2 ? { visibility: "visible" } : { visibility: "hidden" }} className="verificadoUser" /></span></h2>
                                                                 <p>{u.fullName}</p>
-                                                                <p><b>Followers: {u.followers > 999 ? u.followers > 1000000 ? (u.followers/1000000).toFixed(1)+"M" : u.followers/1000 : u.followers}&nbsp;&nbsp;&nbsp;&nbsp;Posts: {u.countOfPosts}</b></p>
+                                                                <p><b>Followers: <span id={"foll" + u.id}>{u.followers > 999 ? u.followers > 1000000 ? (u.followers / 1000000).toFixed(1) + "M" : u.followers / 1000 : u.followers}</span>&nbsp;&nbsp;&nbsp;&nbsp;Posts: {u.countOfPosts}</b></p>
                                                             </div>
                                                         </div>
                                                     }
@@ -542,8 +548,40 @@ export const Profile = () => {
                                 </div>
                             </div>
                             <div id="Javascript" className="tab-pane fade">
-                                <h3>Javascript Tutorial</h3>
-                                <p>JavaScript is the programming language of HTML and the Web. Programming makes computers do what you want them to do. JavaScript is easy to learn. This tutorial will teach you JavaScript from basic to advanced.</p>
+                                <h3>Posts Favoritos</h3>
+                                <div id="divPosts">
+                                    {user.likedPosts === undefined &&
+                                        <p id="noHayPost">No hay ninguna publicación favorita</p>
+                                    }
+                                    <br />
+                                    {postLoading === false && postsPage.content !== undefined &&
+                                        user.likedPosts.map((p) => {
+                                            var bool = p.likedByUser;
+                                            return <div className="post" id={"postTodos2" + p.id} key={p.id}>
+                                                <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
+                                                    <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
+                                                    <p>{p.userWhoPost.userName}</p>
+                                                    {p.userWhoPost.verified &&
+                                                        <FontAwesomeIcon icon={faCheckCircle} color="#2590EB" size="1x" className="verificadoUser" />
+                                                    }
+                                                </button>
+                                                <span className="numberUsersWhoLiked" id={"numLike2" + p.id}>{p.usersWhoLiked}</span>
+                                                <button icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => {document.getElementById("postTodos2"+p.id).style.display = "none"; likeAPost(p); document.getElementById("corazon"+p.id).style.color = "white";var n = document.getElementById("numLike"+p.id); n.innerHTML = parseInt(parseInt(n.innerHTML)-1)}} size={"2x"} id={"corazon" + p.id} color="red">Eliminar</button>
+                                                <h3>{p.affair}</h3>
+                                                <p>{p.content}</p>
+                                                {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
+                                                    <div className="imgPostContainer">
+                                                        {
+                                                            p.imgPath.map((i) => {
+                                                                return <div className="sigleImgPost" key={i}><img src={`http://localhost:8080/file/${i}`} alt="" /></div>
+                                                            })
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        })
+                                    }
+                                </div>
                             </div>
                             <div id="Bootstrap" className="tab-pane fade">
                                 <h3>Bootstrap Tutorial</h3>
