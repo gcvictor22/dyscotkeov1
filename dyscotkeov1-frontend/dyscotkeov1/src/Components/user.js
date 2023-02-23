@@ -466,9 +466,9 @@ export const Profile = () => {
                                                             <img src={`http://localhost:8080/file/${u.imgPath}`} alt="" />
                                                             <input type="button" id={"followBoton" + u.id} value={u.followedByUser ? "Eliminar " : "  Seguir  "} onClick={() => follow(u)} className="followUser" size="2x" style={u.followedByUser ? { border: "2px solid white", background: "#2590EB", color: "white" } : { color: "#2590EB", background: "white", border: "2px solid #2590EB" }} />
                                                             <div className="datasUsuarios">
-                                                                <h2>{u.userName} <span>{u.verified && <FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" className="verificadoUser" />}</span></h2>
+                                                                <h2>{u.userName} <span>{u.verified && document.getElementById &&<FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" className="verificadoUser" />}</span></h2>
                                                                 <p>{u.fullName}</p>
-                                                                <p><b>Followers: </b>{u.followers > 999 ? u.followers > 1000000 ? (u.followers/1000000).toFixed(1)+"M" : u.followers/1000 : u.followers}</p>
+                                                                <p><b>Followers: {u.followers > 999 ? u.followers > 1000000 ? (u.followers/1000000).toFixed(1)+"M" : u.followers/1000 : u.followers}&nbsp;&nbsp;&nbsp;&nbsp;Posts: {u.countOfPosts}</b></p>
                                                             </div>
                                                         </div>
                                                     }
