@@ -83,13 +83,14 @@ export const Register = () => {
           <input type="submit" value="Continuar" id="submitSaveImg"/>
         </form><br />
         <p>¿Ya tienes cuenta? <button onClick={() => navigate('/')} id="rb">Inicia sesión</button></p>
-        <ul>
-          {
+        <p id="erReg">
+        {
             errores.map(er => {
-              return <li>{er.message}</li>
+              // eslint-disable-next-line
+              return <span style={{color : "red"}}> # {er.message} //</span>
             })
           }
-        </ul>
+        </p>
       </div>
     </div>
   );

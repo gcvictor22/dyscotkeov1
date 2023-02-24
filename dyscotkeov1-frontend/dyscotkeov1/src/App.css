@@ -1055,7 +1055,7 @@ a {
   position: absolute;
 }
 
-.followUser{
+.followUser, .viewUser{
   position: absolute;
   right: 3%;
   padding: 5px;
@@ -1064,8 +1064,15 @@ a {
   transition: all 0.2s;
 }
 
-.followUser::after{
-  content: "Follow";
+.viewUser{
+  right: 18%;
+}
+
+.viewUser{
+  background: white;
+  border: 2px solid #2590EB;
+  color: #2590EB;
+  cursor: pointer;
 }
 
 #buscador{
@@ -1202,7 +1209,7 @@ a {
   background-image: url("https://www.atlantico.net/media/atlantico/images/2023/01/29/2023012920145285018.jpg");
   height: 100vh;
   background-size: cover;
-  padding-top: 10%;
+  padding-top: 5%;
 }
 
 #registerFormulario{
@@ -1222,4 +1229,36 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-around;
+}
+
+#erReg{
+  height: 100px;
+  overflow-x: scroll;
+  margin: 0;
+}
+
+#erReg::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+#erReg::-webkit-scrollbar:vertical {
+  width:10px;
+}
+
+#erReg::-webkit-scrollbar-button:increment,#erReg::-webkit-scrollbar-button {
+  display: none;
+} 
+
+#erReg::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+#erReg::-webkit-scrollbar-thumb {
+  background-color: #2590EB;
+  border-radius: 20px;
+  border: 2px solid #f1f2f3;
+}
+
+#erReg::-webkit-scrollbar-track {
+  border-radius: 10px;  
 }
