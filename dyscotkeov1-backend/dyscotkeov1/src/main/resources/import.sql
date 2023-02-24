@@ -20,4 +20,17 @@ insert into post (id, affair, content, img_paths, post_date, user_who_post) valu
 insert into post (id, affair, content, img_paths, post_date, user_who_post) values (9, 'Accounting Assistant III', 'acabo de ver un tiktok donde una piba dice q usa su misma ropa interior varios dias cuando esta menstruando pq con las toallitas no se le ensucia la bombacha', 'VACIO', '2023-01-10', '8ee56ea7-ce36-595c-bfb4-b5fd87e34b09');
 insert into post (id, affair, content, img_paths, post_date, user_who_post) values (10, 'Research Associate', 'Hoy se viene un unboxing masivo de todas las mierdas que me he comprado en Japon y cosas chulas que me han enviado mientras estaba fuera 📦📦📦', 'VACIO', '2022-11-01', '1de440c9-6c02-5d77-8586-bc6a7ad216ed');
 
+insert into likedPosts (user_id, post_id) values ('74002906-c609-5b6b-9acf-177f11e48261', 8);
+insert into likedPosts (user_id, post_id) values ('62a17769-cc2b-5c2a-bc1a-9e76911e999b', 2);
+insert into likedPosts (user_id, post_id) values ('62a17769-cc2b-5c2a-bc1a-9e76911e999b', 3);
+insert into likedPosts (user_id, post_id) values ('1de440c9-6c02-5d77-8586-bc6a7ad216ed', 3);
+
+insert into userfollows (user_who_is_followed_id, user_who_follows_id) values ('62a17769-cc2b-5c2a-bc1a-9e76911e999b', '74002906-c609-5b6b-9acf-177f11e48261');
+insert into userfollows (user_who_is_followed_id, user_who_follows_id) values ('1de440c9-6c02-5d77-8586-bc6a7ad216ed', '74002906-c609-5b6b-9acf-177f11e48261');
+insert into userfollows (user_who_is_followed_id, user_who_follows_id) values ('f2691563-173b-522f-8a25-599c1fcc7772', '74002906-c609-5b6b-9acf-177f11e48261');
+insert into userfollows (user_who_is_followed_id, user_who_follows_id) values ('e55c3744-0875-5044-bb2c-c9fd761af605', '74002906-c609-5b6b-9acf-177f11e48261');
+insert into userfollows (user_who_is_followed_id, user_who_follows_id) values ('8ee56ea7-ce36-595c-bfb4-b5fd87e34b09', '74002906-c609-5b6b-9acf-177f11e48261');
+insert into userfollows (user_who_is_followed_id, user_who_follows_id) values ('df442a4d-2ec0-54b6-ab24-019787533d25', '74002906-c609-5b6b-9acf-177f11e48261');
+
+
 alter sequence hibernate_sequence restart with 11
