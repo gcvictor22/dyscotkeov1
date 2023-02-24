@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { faCheckCircle, faArrowLeft, faHeart, faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faArrowLeft, faHeart, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const headers = {
@@ -391,7 +391,28 @@ export const Profile = () => {
                 </div>
                 <nav id="navBar">
                     <button id="logOutButton" onClick={() => logOut()}>Log out</button>
-                    <button id="miPerfilButton" onClick={() => navigate("/user/" + localStorage.getItem("loggedUser"))}>Mi perfil</button>
+                    <button id="miPerfilButton" style={{color : "red", border: "2px solid red"}} onClick={() => {
+                        Swal.fire({
+                            title: '¿Seguro qué quieres eliminar tu cuenta? Esta acción eliminara todos tus posts, follows y followers',
+                            showCancelButton: true,
+                            cancelButtonText: 'Cancelar',
+                            confirmButtonText: 'Eliminar',
+                            confirmButtonColor: 'red',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                navigate("/")
+                                axios.delete(`/user/delete`, { headers: headers }).catch(() => {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Ha ocurrido un error",
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    })
+                                })
+                            }
+                        })
+                    }}>Eliminar cuenta</button>
+                    <button id="miPerfilButton" onClick={() => navigate(`/user/${localStorage.getItem("loggedUser")}`)}>Mi perfil</button>
                     <button id="postearButton" onClick={() => mostrarPostForm()}>Postear</button>
                     <button id="goBack"><FontAwesomeIcon icon={faArrowLeft} size="2x" onClick={() => { window.history.back() }} /></button>
                 </nav>
@@ -420,9 +441,7 @@ export const Profile = () => {
                             }
                             <li><a href="#Javascript" onClick={() => getUser()} data-toggle="tab">Favoritos</a></li>
                             <li><a href="#Bootstrap" onClick={() => getUser()} data-toggle="tab">Followers</a></li>
-                            {localStorage.getItem("loggedUser") === userName &&
-                                <li><a href="#Jquery" onClick={() => getUser()} data-toggle="tab">Follows</a></li>
-                            }
+                            <li><a href="#Jquery" onClick={() => getUser()} data-toggle="tab">Follows</a></li>
                             {localStorage.getItem('loggedUser') === userName &&
                                 <li><a href="#Editar" data-toggle="tab">Editar mi perfil</a></li>
                             }
@@ -579,9 +598,6 @@ export const Profile = () => {
                                                 {p.userWhoPost.userName === localStorage.getItem("loggedUser") &&
                                                     < FontAwesomeIcon icon={faTrash} className="deletePostButton" onClick={() => deletePost(p)} size="2x" />
                                                 }
-                                                {p.userWhoPost.userName === localStorage.getItem("loggedUser") &&
-                                                    < FontAwesomeIcon icon={faPencil} className="editPostButton" size="2x" />
-                                                }
                                                 <h3>{p.affair}</h3>
                                                 <p>{p.content}</p>
                                                 {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
@@ -652,7 +668,6 @@ export const Profile = () => {
                                     }
                                     {loadingUsers === false && user.followers !== undefined &&
                                         user.followers.map((u) => {
-                                            var bool = u.followedByUser;
                                             var bool2 = u.followers >= 1;
                                             return <div key={u.id}>
                                                 <div className="user" id={"userTodos" + u.id}>
@@ -682,9 +697,6 @@ export const Profile = () => {
                                             return <div key={u.id}>
                                                 <div className="user" id={"userTodosFo" + u.id}>
                                                     <img src={`http://localhost:8080/file/${u.imgPath}`} alt="" />
-                                                    {u.userNmae !== localStorage.getItem("loggedUser") &&
-                                                        <input type="button" id={"followBoton" + u.id} value={"Eliminar"} onClick={() => { follow(u); document.getElementById("userTodosFo"+u.id).style.display = "none" }} className="followUser" size="2x" style={{ border: "2px solid white", background: "#2590EB", color: "white" }} />
-                                                    }
                                                     <div className="datasUsuarios">
                                                         <h2>{u.userName} <span><FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" id={"verified" + u.id} style={bool2 ? { visibility: "visible" } : { visibility: "hidden" }} className="verificadoUser" /></span></h2>
                                                         <p>{u.fullName}</p>

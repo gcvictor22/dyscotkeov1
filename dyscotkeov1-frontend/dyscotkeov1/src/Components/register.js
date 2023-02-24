@@ -46,31 +46,51 @@ export const Register = () => {
   }
 
   return (
-    <div>
-      <h1>Registro</h1>
-      <form onSubmit={hadleSubmit}>
-        <label>UserName</label><br />
-        <input value={userName} onChange={(e) => setUserName(e.target.value)} type="text" name="" id="regUserName" /><br /><br />
-        <label>Password</label><br />
-        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" name="" id="regPassword" /><br /><br />
-        <label>Verify password</label><br />
-        <input value={verifyPassword} onChange={(e) => setVerifyPassword(e.target.value)} type="password" name="" id="regVerifyPassword" /><br /><br />
-        <label>Email</label><br />
-        <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" name="" id="regEmail" /><br /><br />
-        <label>Phone Number</label><br />
-        <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} type="text" name="" id="regPhoneNumber" /><br /><br />
-        <label>Full Name</label><br />
-        <input value={fullName} onChange={(e) => setFullName(e.target.value)} type="text" name="" id="regFullName" /><br /><br />
-        <input type="submit" value="Continuar" />
-      </form><br />
-      <button onClick={() => navigate('/')}>Iniciar sesión</button>
-      <ul>
-        {
-          errores.map(er => {
-            return <li>{er.message}</li>
-          })
-        }
-      </ul>
+    <div id="registerBody">
+      <div id="registerFormulario">
+        <h1>Registro</h1>
+        <form onSubmit={hadleSubmit}>
+          <div className="gridReg">
+            <div>
+              <label>UserName</label><br />
+              <input value={userName} onChange={(e) => setUserName(e.target.value)} type="text" name="" id="regUserName" /><br /><br />
+            </div>
+            <div>
+              <label>Full Name</label><br />
+              <input value={fullName} onChange={(e) => setFullName(e.target.value)} type="text" name="" id="regFullName" /><br /><br />
+            </div>
+          </div>
+          <div className="gridReg">
+            <div>
+              <label>Password</label><br />
+              <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" name="" id="regPassword" /><br /><br />
+            </div>
+            <div>
+              <label>Verify password</label><br />
+              <input value={verifyPassword} onChange={(e) => setVerifyPassword(e.target.value)} type="password" name="" id="regVerifyPassword" /><br /><br />
+            </div>
+          </div>
+          <div className="gridReg">
+            <div>
+              <label>Email</label><br />
+              <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" name="" id="regEmail" /><br /><br />
+            </div>
+            <div>
+              <label>Phone Number</label><br />
+              <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} type="text" name="" id="regPhoneNumber" /><br /><br />
+            </div>
+          </div>
+          <input type="submit" value="Continuar" id="submitSaveImg"/>
+        </form><br />
+        <p>¿Ya tienes cuenta? <button onClick={() => navigate('/')} id="rb">Inicia sesión</button></p>
+        <ul>
+          {
+            errores.map(er => {
+              return <li>{er.message}</li>
+            })
+          }
+        </ul>
+      </div>
     </div>
   );
 }
