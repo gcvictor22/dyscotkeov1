@@ -47,7 +47,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public UserProfileDto viewProfile(@AuthenticationPrincipal User loggedUser){
-        return UserProfileDto.of(loggedUser, userService.getProfile(loggedUser.getId()));
+        return UserProfileDto.of(userService.getProfileByUserName(loggedUser.getUsername()), loggedUser);
     }
 
     @GetMapping("/{id}")
