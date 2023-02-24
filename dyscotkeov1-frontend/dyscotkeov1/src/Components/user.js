@@ -38,6 +38,7 @@ export const Profile = () => {
     const [userPageNumber, setUserPageNumber] = useState(0);
     const [searchUserName, setSearchUserName] = useState('');
     const [loadingUsers, setLoadingUsers] = useState(true);
+    const [likedPostsUser, setLikedPostsUser] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,6 +49,7 @@ export const Profile = () => {
             setEditEmail(res.data.email);
             setEditFullName(res.data.fullName);
             setPublishedPosts(res.data.publishedPosts);
+            setLikedPostsUser(res.data.likedPosts);
         }).catch((er) => {
             if (er.response.status === 404) {
                 navigate("*");
@@ -74,6 +76,53 @@ export const Profile = () => {
         setIsLoading(false);
         // eslint-disable-next-line
     }, []);
+
+    function getUser() {
+        axios.get(url, { headers: headers }).then((res) => {
+            setUser(res.data);
+            setEditUserName(res.data.userName);
+            setEditPhoneNumber(res.data.phoneNumber);
+            setEditEmail(res.data.email);
+            setEditFullName(res.data.fullName);
+            setPublishedPosts(res.data.publishedPosts);
+            setLikedPostsUser(res.data.likedPosts);
+        }).catch((er) => {
+            if (er.response.status === 404) {
+                navigate("*");
+            } else if (er.response.status === 500) {
+                localStorage.clear();
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No puedes acceder a esta sección sin iniciar sesión',
+                    showDenyButton: true,
+                    denyButtonColor: '#4c007d',
+                    confirmButtonText: 'Iniciar sesión',
+                    confirmButtonColor: '#1465bb',
+                    denyButtonText: 'Registrarme',
+                }).then((result) => {
+                    if (result.isDenied) {
+                        navigate("/register")
+                    } else {
+                        navigate("/")
+                    }
+                })
+            }
+        })
+        setIsLoading(false);
+    }
+
+    const [loggedUser, setLoggedUser] = useState(null);
+    useEffect(() => {
+        axios.get(`/user/profile`, { headers: headers }).then((res) => {
+            setLoggedUser(res.data);
+        })
+    }, [])
+    function comprobarUserLiked(post) {
+        if (loggedUser !== null) {
+            return loggedUser.likedPosts.filter((p) => p.id === post.id).length > 0;
+        }
+    }
 
     const createPost = (e) => {
         e.preventDefault();
@@ -369,9 +418,11 @@ export const Profile = () => {
                             {localStorage.getItem("loggedUser") === userName &&
                                 <li><a href="#Publicaciones" data-toggle="tab">Publicaciones</a></li>
                             }
-                            <li><a href="#Javascript" data-toggle="tab">Favoritos</a></li>
-                            <li><a href="#Bootstrap" data-toggle="tab">Bootstrap</a></li>
-                            <li><a href="#Jquery" data-toggle="tab">Jqeury</a></li>
+                            <li><a href="#Javascript" onClick={() => getUser()} data-toggle="tab">Favoritos</a></li>
+                            <li><a href="#Bootstrap" onClick={() => getUser()} data-toggle="tab">Followers</a></li>
+                            {localStorage.getItem("loggedUser") === userName &&
+                                <li><a href="#Jquery" onClick={() => getUser()} data-toggle="tab">Follows</a></li>
+                            }
                             {localStorage.getItem('loggedUser') === userName &&
                                 <li><a href="#Editar" data-toggle="tab">Editar mi perfil</a></li>
                             }
@@ -415,7 +466,7 @@ export const Profile = () => {
                                                         }
                                                     </button>
                                                     <span className="numberUsersWhoLiked" id={"numLike" + p.id}>{p.usersWhoLiked}</span>
-                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id); var l = document.getElementById("numLike" + p.id); var c = document.getElementById("corazon" + p.id); c.style.color !== "white" ? l.innerHTML = parseInt(parseInt(l.innerHTML) + 1) : l.innerHTML = parseInt(parseInt(l.innerHTML) - 1); var mgP = document.getElementById("postTodos2" + p.id); mgP.style.display === "block" ? mgP.style.display = "none" : mgP.style.display = "block" }} size={"2x"} id={"corazon" + p.id} color="red" />
+                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id); var l = document.getElementById("numLike" + p.id); var c = document.getElementById("corazon" + p.id); c.style.color !== "white" ? l.innerHTML = parseInt(parseInt(l.innerHTML) + 1) : l.innerHTML = parseInt(parseInt(l.innerHTML) - 1); likedPostsUser.filter(po => po.id === p.id).length > 0 ? setLikedPostsUser(likedPostsUser) : setLikedPostsUser(likedPostsUser.push(p)) }} size={"2x"} id={"corazon" + p.id} color="red" />
                                                     <h3>{p.affair}</h3>
                                                     <p>{p.content}</p>
                                                     {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
@@ -550,15 +601,15 @@ export const Profile = () => {
                             <div id="Javascript" className="tab-pane fade">
                                 <h3>Posts Favoritos</h3>
                                 <div id="divPosts">
-                                    {user.likedPosts === undefined &&
+                                    {likedPostsUser.length < 1 &&
                                         <p id="noHayPost">No hay ninguna publicación favorita</p>
                                     }
                                     <br />
-                                    {postLoading === false && postsPage.content !== undefined &&
+                                    {postLoading === false && likedPostsUser !== undefined &&
                                         user.likedPosts.map((p) => {
-                                            var bool = p.likedByUser;
+                                            console.log(comprobarUserLiked(p));
+                                            var bool = comprobarUserLiked(p);
                                             return <div className="post" id={"postTodos2" + p.id} key={p.id}>
-                                                {document.getElementById("postTodos2" + p.id).style.display = "block"}
                                                 <button className="userWhoPost" onClick={() => navigateTo(p.userWhoPost.userName)}>
                                                     <img src={`http://localhost:8080/file/${p.userWhoPost.imgPath}`} alt="" />
                                                     <p>{p.userWhoPost.userName}</p>
@@ -566,8 +617,15 @@ export const Profile = () => {
                                                         <FontAwesomeIcon icon={faCheckCircle} color="#2590EB" size="1x" className="verificadoUser" />
                                                     }
                                                 </button>
-                                                <span className="numberUsersWhoLiked" id={"numLike2" + p.id}>{p.usersWhoLiked}</span>
-                                                <button icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { document.getElementById("postTodos2" + p.id).style.display = "none"; likeAPost(p); document.getElementById("corazon" + p.id).style.color = "white"; var n = document.getElementById("numLike" + p.id); n.innerHTML = parseInt(parseInt(n.innerHTML) - 1) }} size={"2x"} id={"corazon" + p.id} color="red">Eliminar</button>
+                                                {localStorage.getItem("loggedUser") === userName &&
+                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={{ color: "red" }} onClick={() => { document.getElementById("postTodos2" + p.id).style.display = "none"; likeAPost(p); document.getElementById("corazon" + p.id).style.color = "white"; var n = document.getElementById("numLike" + p.id); n.innerHTML = parseInt(parseInt(n.innerHTML) - 1) }} size={"2x"} id={"corazon" + p.id} color="red" />
+                                                }
+                                                {localStorage.getItem("loggedUser") !== userName &&
+                                                    <span className="numberUsersWhoLiked" id={"numLike" + p.id}>{p.usersWhoLiked}</span>
+                                                }
+                                                {localStorage.getItem("loggedUser") !== userName &&
+                                                    <FontAwesomeIcon icon={faHeart} className="likePostButton" style={bool ? { color: "red" } : { color: "white" }} onClick={() => { likeAPost(p); cambiarIcono(p.id); var l = document.getElementById("numLike" + p.id); var c = document.getElementById("corazon" + p.id); c.style.color !== "white" ? l.innerHTML = parseInt(parseInt(l.innerHTML) + 1) : l.innerHTML = parseInt(parseInt(l.innerHTML) - 1); likedPostsUser.filter(po => po.id === p.id).length > 0 ? setLikedPostsUser(likedPostsUser) : setLikedPostsUser(likedPostsUser.push(p)) }} size={"2x"} id={"corazon" + p.id} color="red" />
+                                                }
                                                 <h3>{p.affair}</h3>
                                                 <p>{p.content}</p>
                                                 {p.imgPath.length > 0 && p.imgPath[0] !== "VACIO" &&
@@ -585,12 +643,58 @@ export const Profile = () => {
                                 </div>
                             </div>
                             <div id="Bootstrap" className="tab-pane fade">
-                                <h3>Bootstrap Tutorial</h3>
-                                <p>Bootstrap is the most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web.</p>
+                                <div id="buscador">
+                                    <h3>Todos los followers</h3>
+                                </div>
+                                <div id="divPosts">
+                                    {user.followers.length < 1 &&
+                                        <p id="noHayPost">No existen usuarios</p>
+                                    }
+                                    {loadingUsers === false && user.followers !== undefined &&
+                                        user.followers.map((u) => {
+                                            var bool = u.followedByUser;
+                                            var bool2 = u.followers >= 1;
+                                            return <div key={u.id}>
+                                                <div className="user" id={"userTodos" + u.id}>
+                                                    <img src={`http://localhost:8080/file/${u.imgPath}`} alt="" />
+                                                    <div className="datasUsuarios">
+                                                        <h2>{u.userName} <span><FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" id={"verified" + u.id} style={bool2 ? { visibility: "visible" } : { visibility: "hidden" }} className="verificadoUser" /></span></h2>
+                                                        <p>{u.fullName}</p>
+                                                        <p><b>Followers: <span id={"foll" + u.id}>{u.followers > 999 ? u.followers > 1000000 ? (u.followers / 1000000).toFixed(1) + "M" : u.followers / 1000 : u.followers}</span>&nbsp;&nbsp;&nbsp;&nbsp;Posts: {u.countOfPosts}</b></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        })
+                                    }
+                                </div>
                             </div>
                             <div id="Jquery" className="tab-pane fade">
-                                <h3>Jquery Tutorial</h3>
-                                <p>jQuery UI is a curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library. Whether you're building highly interactive web applications or you just need to add a date picker to a form control, jQuery UI is the perfect choice.</p>
+                                <div id="buscador">
+                                    <h3>Todos los follows</h3>
+                                </div>
+                                <div id="divPosts">
+                                    {user.follows.length === 0 &&
+                                        <p id="noHayPost">No existen usuarios</p>
+                                    }
+                                    {loadingUsers === false && user.follows !== undefined &&
+                                        user.follows.map((u) => {
+                                            var bool2 = u.followers >= 1;
+                                            return <div key={u.id}>
+                                                <div className="user" id={"userTodosFo" + u.id}>
+                                                    <img src={`http://localhost:8080/file/${u.imgPath}`} alt="" />
+                                                    {u.userNmae !== localStorage.getItem("loggedUser") &&
+                                                        <input type="button" id={"followBoton" + u.id} value={"Eliminar"} onClick={() => { follow(u); document.getElementById("userTodosFo"+u.id).style.display = "none" }} className="followUser" size="2x" style={{ border: "2px solid white", background: "#2590EB", color: "white" }} />
+                                                    }
+                                                    <div className="datasUsuarios">
+                                                        <h2>{u.userName} <span><FontAwesomeIcon icon={faCheckCircle} color="white" size="xs" id={"verified" + u.id} style={bool2 ? { visibility: "visible" } : { visibility: "hidden" }} className="verificadoUser" /></span></h2>
+                                                        <p>{u.fullName}</p>
+                                                        <p><b>Followers: <span id={"foll" + u.id}>{u.followers > 999 ? u.followers > 1000000 ? (u.followers / 1000000).toFixed(1) + "M" : u.followers / 1000 : u.followers}</span>&nbsp;&nbsp;&nbsp;&nbsp;Posts: {u.countOfPosts}</b></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        })
+                                    }
+                                </div>
                             </div>
                         </div>
 

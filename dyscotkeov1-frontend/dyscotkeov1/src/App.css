@@ -635,7 +635,7 @@ a {
 #divPosts{
   margin: 15px auto;
   width: 700px;
-  height: 560px;
+  height: 470px;
   overflow-y: scroll;
   color: #FFFFFF;
 }
@@ -677,6 +677,7 @@ a {
   box-shadow: 5px 5px 5px rgba(111, 111, 111);
   text-align: justify;
   position: relative;
+  display: block;
 }
 
 .post h3{
